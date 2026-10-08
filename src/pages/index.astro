@@ -1,0 +1,675 @@
+---
+import RetroBackground from '../components/RetroBackground.astro';
+import RetroDock from '../components/RetroDock.astro';
+import RetroTerminal from '../components/RetroTerminal.astro';
+import GithubContributions from '../components/GithubContributions.astro';
+import profile from '../data/profile.json';
+import '../styles/fonts.css';
+import headingFont from '../assets/fonts/space-grotesk-latin.woff2?url';
+import nscCertificate from '../assets/nsc-2021.jpg';
+import employmentCertificate from '../assets/iig-employment.jpeg';
+import tradingScreenshot from '../assets/mt5-trading-tools.png';
+import linePayment from '../assets/line-payment-status.png';
+import lineReturn from '../assets/line-return-reminder.png';
+import quinrMenu from '../assets/projects/quinr-menu.webp';
+import quinrMobile from '../assets/projects/quinr-mobile.webp';
+import quinrOptions from '../assets/projects/quinr-menu-options.webp';
+import rentalStorefront from '../assets/projects/sabaijai-storefront.webp';
+import rentalProduct from '../assets/projects/sabaijai-product.webp';
+import rentalMobile from '../assets/projects/sabaijai-mobile.webp';
+import resumeImage from '../assets/nachthaphong-resume.webp';
+const stackIcons = import.meta.glob<string>('../assets/stack/*.svg', { eager: true, query: '?url', import: 'default' });
+const restaurantScreenshots = [
+  { image: quinrMenu, filename: 'Menu.webp', title: 'QuinR-rai — Store menu' },
+  { image: quinrOptions, filename: 'Menu-options.webp', title: 'QuinR-rai — Menu options' },
+  { image: quinrMobile, filename: 'Mobile-menu.webp', title: 'QuinR-rai — Mobile menu' },
+];
+const rentalScreenshots = [
+  { image: rentalStorefront, filename: 'Storefront.webp', title: 'SabaiJai — Rental and retail storefront' },
+  { image: rentalProduct, filename: 'Product-detail.webp', title: 'SabaiJai — Rental product details' },
+  { image: rentalMobile, filename: 'Mobile-product.webp', title: 'SabaiJai — Mobile product details' },
+  { image: linePayment, filename: 'Payment-status.png', title: 'LINE — Payment status' },
+  { image: lineReturn, filename: 'Return-reminder.png', title: 'LINE — Rental return reminder' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Nachthaphong Saengbut — Fullstack Developer." />
+    <title>Nachthaphong Saengbut — Developer</title>
+    <link rel="preload" href={headingFont} as="font" type="font/woff2" crossorigin />
+  </head>
+  <body>
+    <a class="skip-link" href="#about">Skip to profile</a>
+    <div id="retro-toast" class="retro-toast" role="status" aria-live="polite" hidden></div>
+    <main>
+    <div class="hero" id="home">
+      <RetroBackground />
+      <header><a class="wordmark" href="#home" aria-label="Home">134NK<span> / DEV</span></a><span class="system-status"><i aria-hidden="true"></i> PERSONAL PROFILE</span></header>
+      <section class="hero-intro" aria-labelledby="name">
+        <p class="eyebrow hero-role"><span class="terminal-prompt" aria-hidden="true">&gt; </span><span class="terminal-role" style={`--role-length: ${profile.role.length}`}>{profile.role.toUpperCase()}</span><span class="terminal-caret" aria-hidden="true">_</span></p>
+        <h1 id="name">{profile.firstName}<br /><span>{profile.lastName}.</span></h1>
+      </section>
+      <footer>
+        <span>BASED IN THAILAND</span>
+        <div class="hero-actions">
+          <a class="hero-resume-btn" href={resumeImage.src} data-title="Nachthaphong-Resume.webp" aria-haspopup="dialog" aria-controls="attachment-dialog" aria-label="View Nachthaphong Saengbut Resume">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/></svg>
+            VIEW RESUME / CV <span aria-hidden="true">↗</span>
+          </a>
+          <a class="scroll-cue" href="#about">EXPLORE PROFILE <span aria-hidden="true">↓</span></a>
+        </div>
+      </footer>
+    </div>
+    <div class="profile-content">
+      <section class="profile-window" id="about" aria-labelledby="about-heading">
+        <div class="window-title">
+          <span>01 / ABOUT.TXT</span>
+          <div class="window-controls">
+            <button type="button" class="win-btn win-min" aria-label="Minimize About window">_</button>
+            <button type="button" class="win-btn win-max" aria-label="Maximize About window">□</button>
+            <button type="button" class="win-btn win-close" aria-label="Close About window">×</button>
+          </div>
+        </div>
+        <div class="window-body">
+          <p class="eyebrow">THE PERSON BEHIND THE SCREEN</p>
+          <h2 id="about-heading">A little about me.</h2>
+          <p>{profile.summary}</p>
+          <dl class="facts"><div><dt>Education</dt><dd>{profile.education}</dd></div><div><dt>Award</dt><dd>{profile.award}</dd></div></dl>
+          <div class="about-attachments">
+            <a class="attachment" href={resumeImage.src} data-title="Nachthaphong-Resume.webp" aria-haspopup="dialog" aria-controls="attachment-dialog" aria-label="View Nachthaphong Saengbut Resume">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m8 12 7-7a3 3 0 0 1 4 4L9 19a5 5 0 0 1-7-7L12 2" /></svg>
+              Resume.webp <span aria-hidden="true">↗</span>
+            </a>
+            <a class="attachment" href={nscCertificate.src} data-title="NSC-2021.jpg" aria-haspopup="dialog" aria-controls="attachment-dialog" aria-label="View NSC 2021 certificate">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m8 12 7-7a3 3 0 0 1 4 4L9 19a5 5 0 0 1-7-7L12 2" /></svg>
+              NSC-2021.jpg <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </div>
+      </section>
+      <section class="profile-window" id="experience" aria-labelledby="work-heading">
+        <div class="window-title">
+          <span>02 / WORK.LOG</span>
+          <div class="window-controls">
+            <button type="button" class="win-btn win-min" aria-label="Minimize Work window">_</button>
+            <button type="button" class="win-btn win-max" aria-label="Maximize Work window">□</button>
+            <button type="button" class="win-btn win-close" aria-label="Close Work window">×</button>
+          </div>
+        </div>
+        <div class="window-body">
+          <p class="eyebrow">PROFESSIONAL EXPERIENCE</p>
+          <h2 id="work-heading">{profile.experience.company}</h2>
+          <p class="period">{profile.experience.period}</p>
+          <p>{profile.experience.role}</p>
+          <p class="period">{profile.experience.focus}</p>
+          <p>{profile.experience.description}</p>
+          <a class="attachment" href={employmentCertificate.src} data-title="iiG-employment.jpeg" aria-haspopup="dialog" aria-controls="attachment-dialog" aria-label="View iiG employment certificate">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m8 12 7-7a3 3 0 0 1 4 4L9 19a5 5 0 0 1-7-7L12 2" /></svg>
+            iiG-employment.jpeg <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      </section>
+      <section class="profile-window" id="skills" aria-labelledby="skills-heading">
+        <div class="window-title">
+          <span>03 / SKILLS.SYS</span>
+          <div class="window-controls">
+            <button type="button" class="win-btn win-min" aria-label="Minimize Skills window">_</button>
+            <button type="button" class="win-btn win-max" aria-label="Maximize Skills window">□</button>
+            <button type="button" class="win-btn win-close" aria-label="Close Skills window">×</button>
+          </div>
+        </div>
+        <div class="window-body">
+          <p class="eyebrow">TOOLS I WORK WITH</p>
+          <h2 id="skills-heading">My toolkit.</h2>
+          <dl class="skill-list">{profile.skills.map(skill => (
+            <div>
+              <dt>{skill.area}</dt>
+              <dd>
+                {skill.tools.length > 0 && <ul class="stack-list" aria-label={`${skill.area} technologies`}>
+                  {skill.tools.map(tool => <li class="stack-chip">
+                    <span class="stack-icon"><img src={stackIcons[`../assets/stack/${tool.icon}.svg`]} width="20" height="20" alt="" aria-hidden="true" loading="lazy" decoding="async" /></span>
+                    <span>{tool.name}</span>
+                  </li>)}
+                </ul>}
+                <p class="skill-note">{skill.detail}</p>
+              </dd>
+            </div>
+          ))}</dl>
+
+          <!-- Auto-fetched GitHub Contribution Graph -->
+          <GithubContributions username={profile.github} />
+
+          <div class="projects-heading"><h3>Selected projects.</h3><span>PRIVATE SOURCE / DEMO CAPTURES</span></div>
+
+          <article class="project-sample" aria-labelledby="restaurant-heading">
+            <p class="project-kicker">01 / RESTAURANT ORDERING</p>
+            <h3 id="restaurant-heading">{profile.restaurantProject.title}</h3>
+            <p class="period">{profile.restaurantProject.stack}</p>
+            <p>{profile.restaurantProject.description}</p>
+            <div class="project-attachments">
+              {restaurantScreenshots.map(screenshot => (
+                <a class="attachment" href={screenshot.image.src} data-title={screenshot.title} aria-haspopup="dialog" aria-controls="attachment-dialog" aria-label={`View ${screenshot.title} screenshot`}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m8 12 7-7a3 3 0 0 1 4 4L9 19a5 5 0 0 1-7-7L12 2" /></svg>
+                  {screenshot.filename} <span aria-hidden="true">↗</span>
+                </a>
+              ))}
+            </div>
+          </article>
+          <article class="project-sample" aria-labelledby="rental-heading">
+            <p class="project-kicker">02 / RENTAL &amp; RETAIL</p>
+            <h3 id="rental-heading">{profile.rentalProject.title}</h3>
+            <p class="period">{profile.rentalProject.stack}</p>
+            <p>{profile.rentalProject.description}</p>
+            <div class="project-attachments">
+              {rentalScreenshots.map(screenshot => (
+                <a class="attachment" href={screenshot.image.src} data-title={screenshot.title} aria-haspopup="dialog" aria-controls="attachment-dialog" aria-label={`View ${screenshot.title} screenshot`}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m8 12 7-7a3 3 0 0 1 4 4L9 19a5 5 0 0 1-7-7L12 2" /></svg>
+                  {screenshot.filename} <span aria-hidden="true">↗</span>
+                </a>
+              ))}
+            </div>
+          </article>
+          <article class="project-sample" aria-labelledby="trading-heading">
+            <p class="project-kicker">03 / TRADING TOOLS</p>
+            <h3 id="trading-heading">{profile.tradingProject.title}</h3>
+            <p class="period">{profile.tradingProject.stack}</p>
+            <p>{profile.tradingProject.description}</p>
+            <a class="attachment" href={tradingScreenshot.src} data-title={profile.tradingProject.title} aria-haspopup="dialog" aria-controls="attachment-dialog" aria-label="View MT5 trading tools screenshot">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m8 12 7-7a3 3 0 0 1 4 4L9 19a5 5 0 0 1-7-7L12 2" /></svg>
+              MT5-tools.png <span aria-hidden="true">↗</span>
+            </a>
+          </article>
+        </div>
+      </section>
+      <section class="profile-window" id="contact" aria-labelledby="contact-heading">
+        <div class="window-title">
+          <span>04 / MAIL.TXT</span>
+          <div class="window-controls">
+            <button type="button" class="win-btn win-min" aria-label="Minimize Contact window">_</button>
+            <button type="button" class="win-btn win-max" aria-label="Maximize Contact window">□</button>
+            <button type="button" class="win-btn win-close" aria-label="Close Contact window">×</button>
+          </div>
+        </div>
+        <div class="window-body">
+          <p class="eyebrow">CONTACT</p>
+          <h2 id="contact-heading">Say hello.</h2>
+          <div class="contact-links">
+            <div class="contact-email-row">
+              <a class="contact-link" href={`mailto:${profile.email}`}>{profile.email}<span aria-hidden="true"> ↗</span></a>
+              <button type="button" class="copy-email-btn" id="copy-email-btn" aria-label="Copy email address" title="Copy to clipboard">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
+                <span>COPY</span>
+              </button>
+            </div>
+            <a class="contact-link" href={profile.line} target="_blank" rel="noopener noreferrer">Chat on LINE<span aria-hidden="true"> ↗</span></a>
+          </div>
+        </div>
+      </section>
+    </div>
+    </main>
+    <RetroDock />
+    <RetroTerminal />
+    <dialog id="attachment-dialog" class="attachment-modal" aria-labelledby="attachment-title">
+      <div class="attachment-window">
+        <div class="attachment-titlebar">
+          <div class="attachment-title-group">
+            <span class="attachment-icon" aria-hidden="true">📄</span>
+            <h2 id="attachment-title">Attachment</h2>
+          </div>
+          <div class="attachment-toolbar">
+            <button type="button" class="dialog-tool-btn" id="attach-zoom-out" aria-label="Zoom out" title="Zoom Out (−)">−</button>
+            <button type="button" class="dialog-tool-btn" id="attach-zoom-reset" aria-label="Reset zoom" title="Reset Zoom">100%</button>
+            <button type="button" class="dialog-tool-btn" id="attach-zoom-in" aria-label="Zoom in" title="Zoom In (+)">+</button>
+            <a href="#" id="attach-open-link" target="_blank" rel="noopener noreferrer" class="dialog-tool-btn external-btn" title="Open full image in new tab">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+              <span>Full</span>
+            </a>
+            <form method="dialog"><button autofocus class="dialog-close-btn" aria-label="Close attachment">×</button></form>
+          </div>
+        </div>
+        <div class="attachment-preview" id="attachment-preview-container">
+          <img id="attachment-img" alt="" />
+          <p hidden>Could not load the attachment. Please close and try again.</p>
+        </div>
+      </div>
+    </dialog>
+  </body>
+</html>
+
+<script>
+  import { playClick, playBeep } from '../lib/retrosound';
+
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const reveals = new Set<Animation>();
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        observer.unobserve(entry.target);
+        if (reducedMotion.matches) return;
+        const animation = entry.target.animate(
+          [{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'translateY(0)' }],
+          { duration: 550, easing: 'cubic-bezier(.16, 1, .3, 1)' },
+        );
+        reveals.add(animation);
+        animation.addEventListener('finish', () => reveals.delete(animation), { once: true });
+      });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.window-body > h2, .window-body > p, .facts, .skill-list > div, .project-sample, .contact-links, .github-graph-card').forEach(element => observer.observe(element));
+  }
+  reducedMotion.addEventListener('change', () => {
+    if (reducedMotion.matches) reveals.forEach(animation => animation.finish());
+  });
+
+  const dialog = document.querySelector<HTMLDialogElement>('#attachment-dialog')!;
+  const title = dialog.querySelector<HTMLHeadingElement>('h2')!;
+  const image = dialog.querySelector<HTMLImageElement>('#attachment-img')!;
+  const error = dialog.querySelector<HTMLParagraphElement>('p')!;
+  const openLink = document.querySelector<HTMLAnchorElement>('#attach-open-link')!;
+  const zoomInBtn = document.getElementById('attach-zoom-in');
+  const zoomOutBtn = document.getElementById('attach-zoom-out');
+  const zoomResetBtn = document.getElementById('attach-zoom-reset');
+
+  let currentZoom = 1.0;
+  function updateZoom(z: number) {
+    currentZoom = Math.max(0.6, Math.min(2.5, z));
+    if (image) {
+      image.style.transform = `scale(${currentZoom})`;
+    }
+    if (zoomResetBtn) {
+      zoomResetBtn.textContent = `${Math.round(currentZoom * 100)}%`;
+    }
+  }
+
+  zoomInBtn?.addEventListener('click', () => {
+    updateZoom(currentZoom + 0.2);
+    playClick();
+  });
+  zoomOutBtn?.addEventListener('click', () => {
+    updateZoom(currentZoom - 0.2);
+    playClick();
+  });
+  zoomResetBtn?.addEventListener('click', () => {
+    updateZoom(1.0);
+    playClick();
+  });
+
+  image.addEventListener('error', () => { error.hidden = false; });
+  if (typeof dialog.showModal === 'function') {
+    document.querySelectorAll<HTMLAnchorElement>('[aria-controls="attachment-dialog"]').forEach(link => {
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        title.textContent = link.dataset.title || 'Attachment';
+        error.hidden = true;
+        image.alt = link.getAttribute('aria-label') || '';
+        image.src = link.href;
+        if (openLink) openLink.href = link.href;
+        updateZoom(1.0);
+        dialog.showModal();
+        playClick();
+      });
+    });
+  }
+  dialog.addEventListener('click', event => {
+    const rect = dialog.getBoundingClientRect();
+    if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
+  });
+  dialog.addEventListener('close', () => {
+    image.removeAttribute('src');
+    updateZoom(1.0);
+  });
+
+  // Retro Toast Notification
+  const toast = document.getElementById('retro-toast')!;
+  let toastTimer: ReturnType<typeof setTimeout>;
+  function showToast(msg: string) {
+    clearTimeout(toastTimer);
+    toast.textContent = msg;
+    toast.hidden = false;
+    toastTimer = setTimeout(() => { toast.hidden = true; }, 2800);
+  }
+
+  // Copy Email Functionality
+  const copyBtn = document.getElementById('copy-email-btn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      const email = '134nk.dev@gmail.com';
+      navigator.clipboard.writeText(email).then(() => {
+        showToast('EMAIL COPIED TO CLIPBOARD! [OK]');
+        playBeep(800, 'triangle', 0.08, 0.05);
+      }).catch(() => {
+        showToast(`EMAIL: ${email}`);
+      });
+    });
+  }
+
+  // Window Controls (Minimize / Accordion Toggle)
+  document.querySelectorAll<HTMLElement>('.profile-window').forEach(win => {
+    const minBtn = win.querySelector('.win-min');
+    const maxBtn = win.querySelector('.win-max');
+    const closeBtn = win.querySelector('.win-close');
+    const body = win.querySelector<HTMLElement>('.window-body');
+
+    minBtn?.addEventListener('click', () => {
+      if (body) {
+        const isHidden = body.style.display === 'none';
+        body.style.display = isHidden ? '' : 'none';
+        playClick();
+      }
+    });
+
+    maxBtn?.addEventListener('click', () => {
+      win.classList.toggle('maximized');
+      playClick();
+    });
+
+    closeBtn?.addEventListener('click', () => {
+      showToast('SYSTEM WARNING: CORE RECORD CANNOT BE TERMINATED.');
+      playBeep(240, 'square', 0.12, 0.08);
+    });
+  });
+</script>
+
+<style is:global>
+  * { box-sizing: border-box; }
+  html { color-scheme: dark; background: #080c14; scroll-behavior: smooth; }
+  body { margin: 0; color: #edf3ff; font-family: var(--font-body); }
+  .hero { min-height: 100svh; position: relative; isolation: isolate; display: flex; flex-direction: column; padding: 32px clamp(24px, 5vw, 88px) 96px; }
+  header, section, footer { position: relative; }
+  header, footer { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+  a { color: inherit; text-decoration: none; font-size: 13px; }
+  a:hover { text-decoration: underline; text-underline-offset: 5px; }
+  a:focus-visible { outline: 2px solid #edf3ff; outline-offset: 8px; }
+  .wordmark { font-family: var(--font-display); font-size: 17px; font-weight: 700; letter-spacing: -.05em; }
+  .wordmark span { color: #94a4bb; font-size: 11px; letter-spacing: .02em; font-weight: 400; }
+  .hero-intro { margin-top: auto; padding-top: 40vh; padding-bottom: 40px; }
+  .eyebrow, footer { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; }
+  .eyebrow { color: #aebfd6; margin: 0 0 20px; }
+  h1 { font-family: var(--font-display); font-size: clamp(40px, 6.5vw, 104px); line-height: 1.02; letter-spacing: -.055em; font-weight: 500; margin: 0; }
+  h1 span { color: #a9bbd6; }
+  footer { color: #94a4bb; margin-top: auto; padding-top: 24px; border-top: 1px solid #ffffff20; }
+  .hero-actions { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .hero-resume-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #14243d;
+    border: 1px solid #3d5880;
+    color: #edf3ff;
+    font: 11px var(--font-mono);
+    letter-spacing: 0.08em;
+    border-radius: 3px;
+    transition: all 160ms;
+  }
+  .hero-resume-btn:hover {
+    background: #203c68;
+    border-color: #8dbfff;
+    color: #fff;
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+  .skip-link { position: fixed; z-index: 30; top: 10px; left: 10px; padding: 12px; background: #171d27; transform: translateY(-160%); }
+  .skip-link:focus { transform: none; }
+  .profile-content { max-width: 1050px; margin: auto; padding: 64px 24px 104px; }
+  .profile-window { border: 1px solid #344b6c; background: #0b1220; margin-bottom: 48px; scroll-margin-top: 28px; }
+  .profile-window.maximized { border-color: #8dbfff; box-shadow: 0 0 24px #8dbfff22; }
+  .window-title { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 14px; background: #14243d; border-bottom: 1px solid #344b6c; color: #bbd4f5; font: 10px var(--font-mono); letter-spacing: .05em; }
+  .window-controls { display: flex; align-items: center; gap: 5px; }
+  .win-btn {
+    width: 20px; height: 20px; padding: 0; background: #19273c; border: 1px solid #3d5578; color: #bbd4f5; font: 10px var(--font-mono); cursor: pointer; display: grid; place-items: center; border-radius: 2px;
+  }
+  .win-btn:hover { background: #2f4460; color: #fff; }
+  .win-close:hover { background: #c53030; border-color: #e53e3e; }
+  .window-body { padding: clamp(24px, 5vw, 56px); }
+  .window-body .eyebrow { color: #8faad0; line-height: 1.8; }
+  h2 { font-family: var(--font-display); font-size: clamp(28px, 4vw, 46px); letter-spacing: -.04em; font-weight: 500; margin: 0 0 24px; }
+  .window-body p:not(.eyebrow), dd { color: #bac8de; font-size: 16px; line-height: 1.75; max-width: 680px; }
+  .period { font-family: var(--font-mono); font-size: 12px !important; color: #93aed4 !important; }
+  dl { margin: 32px 0 0; }
+  dl div { border-top: 1px solid #24364e; padding: 20px 0; }
+  dt { font: 11px var(--font-mono); color: #bbd4f5; margin-bottom: 8px; }
+  dd { margin: 0; }
+  .about-attachments { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+  .resume-attachment-btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; background: #14253e; border: 1px solid #3b5c8a; color: #edf3ff; font: 12px/1.5 var(--font-mono); border-radius: 3px; transition: all 180ms;
+  }
+  .resume-attachment-btn:hover { background: #223c64; border-color: #8dbfff; text-decoration: none; transform: translateY(-2px); }
+  .badge-mini { font-size: 9px; background: #39d35322; color: #39d353; border: 1px solid #39d35366; padding: 1px 4px; border-radius: 2px; }
+  .attachment { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; padding: 10px 12px; border: 1px solid #24364e; color: #9db5d8; font: 12px/1.5 var(--font-mono); overflow-wrap: anywhere; }
+  .attachment svg { flex-shrink: 0; }
+  .attachment:hover { border-color: #586475; color: #c3ddff; }
+  .project-sample { position: relative; margin: 16px 0 0; padding: clamp(20px, 3vw, 28px); border: 1px solid #24364e; background: linear-gradient(120deg, #112039, #0b1220 75%); box-shadow: inset 3px 0 #465366; transition: border-color 180ms, box-shadow 180ms; }
+  .project-sample h3 { font-family: var(--font-display); margin: 0 0 8px; font-size: 18px; font-weight: 500; }
+  .project-sample:hover, .project-sample:focus-within { border-color: #586475; box-shadow: inset 3px 0 #8dbfff; }
+  .window-body p.project-kicker { margin: 0 0 14px; font: 10px/1.5 var(--font-mono); letter-spacing: .09em; color: #8faad0; }
+  .projects-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin: 48px 0 24px; }
+  .projects-heading h3 { font-family: var(--font-display); margin: 0; font-size: 26px; font-weight: 500; letter-spacing: -.03em; }
+  .projects-heading span { font: 9px/1.6 var(--font-mono); color: #8faad0; letter-spacing: .05em; }
+  .skill-list { margin-top: 36px; }
+  .skill-list > div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 28px; padding: 26px 0; border-top: 1px solid #24364e; }
+  .skill-list dt { margin: 4px 0 0; line-height: 1.6; color: #8ba2c3; }
+  .skill-list dd { font-size: 14px; }
+  .stack-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); gap: 20px 16px; padding: 0; margin: 0 0 20px; list-style: none; }
+  .stack-chip { display: flex; align-items: center; gap: 10px; min-width: 0; color: #d6e3f5; font: 13px/1.5 var(--font-body); }
+  .stack-icon { display: grid; place-items: center; width: 22px; height: 22px; flex-shrink: 0; }
+  .stack-icon img { display: block; object-fit: contain; filter: grayscale(1) brightness(0) invert(.8); opacity: .9; transition: filter 180ms, opacity 180ms; }
+  .stack-chip:hover .stack-icon img { filter: none; opacity: 1; }
+  .window-body p.skill-note { margin: 0; font-size: 13px; color: #9aaecb; }
+  @media (hover: none) { .stack-icon img { filter: none; opacity: 1; } }
+  .project-attachments { display: flex; flex-wrap: wrap; gap: 8px; }
+  html:has(dialog[open]) { overflow: hidden; }
+  .attachment-modal {
+    padding: 0;
+    border: 1px solid #3d5880;
+    background: #080f1a;
+    color: #e0ecff;
+    box-shadow: 0 16px 48px #000000cc, 0 0 0 1px #8dbfff33;
+    border-radius: 6px;
+    overflow: hidden;
+    width: min(920px, 94vw);
+    max-width: 94vw;
+    margin: auto;
+  }
+  .attachment-modal:not([open]) {
+    display: none !important;
+  }
+  .attachment-modal::backdrop {
+    background: rgba(4, 8, 16, 0.85);
+    backdrop-filter: blur(6px);
+  }
+  .attachment-window {
+    display: flex;
+    flex-direction: column;
+    height: min(90vh, 880px);
+    width: 100%;
+  }
+  .attachment-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 16px;
+    background: #14243d;
+    border-bottom: 1px solid #283d5a;
+    flex-shrink: 0;
+  }
+  .attachment-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .attachment-icon {
+    font-size: 14px;
+  }
+  .attachment-titlebar h2 {
+    margin: 0;
+    font: 12px var(--font-mono);
+    color: #edf3ff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .attachment-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .dialog-tool-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 28px;
+    min-width: 28px;
+    padding: 0 8px;
+    border: 1px solid #344b6c;
+    background: #182842;
+    color: #bbd4f5;
+    font: 11px var(--font-mono);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 140ms;
+    text-decoration: none;
+  }
+  .dialog-tool-btn:hover {
+    background: #243c64;
+    color: #fff;
+    border-color: #8dbfff;
+    text-decoration: none;
+  }
+  .dialog-close-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid #344b6c;
+    background: #182842;
+    color: #bbd4f5;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 3px;
+    display: grid;
+    place-items: center;
+    transition: all 140ms;
+  }
+  .dialog-close-btn:hover {
+    background: #c53030;
+    border-color: #e53e3e;
+    color: #fff;
+  }
+  .attachment-preview {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: auto;
+    padding: 24px;
+    background: #060b14;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .attachment-preview img {
+    display: block;
+    width: 100%;
+    max-width: 820px;
+    height: auto;
+    margin: 0 auto;
+    border-radius: 4px;
+    box-shadow: 0 10px 30px #000000aa;
+    transition: transform 140ms ease-out;
+    transform-origin: top center;
+  }
+  .attachment-preview p {
+    max-width: 280px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #ef4444;
+  }
+  .contact-links { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
+  .contact-email-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .contact-link { color: #8dbfff; font-size: clamp(15px, 2.5vw, 24px); overflow-wrap: anywhere; }
+  .copy-email-btn {
+    display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; background: #14243d; border: 1px solid #3d5880; color: #bbd4f5; font: 11px var(--font-mono); border-radius: 3px; cursor: pointer; transition: all 140ms;
+  }
+  .copy-email-btn:hover { background: #233b5e; color: #fff; border-color: #8dbfff; }
+  #contact { margin-bottom: 0; }
+  .system-status { display: flex; align-items: center; gap: 8px; color: #bbd4f5; font: 9px var(--font-mono); letter-spacing: .08em; }
+  .system-status i { width: 5px; height: 5px; background: #8dbfff; box-shadow: 0 0 9px #8dbfff66; }
+  .scroll-cue { display: inline-flex; align-items: center; gap: 12px; font: inherit; letter-spacing: inherit; }
+  .scroll-cue span { font-size: 16px; transition: transform 180ms; }
+  .scroll-cue:hover span { transform: translateY(3px); }
+  .attachment, .contact-link { transition: color 180ms, border-color 180ms, background 180ms, transform 180ms; }
+  .attachment:hover { background: #181e27; transform: translateY(-2px); text-decoration: none; }
+  .attachment:active { transform: translateY(0); }
+  .contact-link:hover { color: #e4f0ff; }
+  .hero-intro .eyebrow { animation: boot-in 650ms 80ms both; }
+  .hero-role { display: flex; align-items: baseline; gap: 8px; }
+  .terminal-prompt, .terminal-caret { color: #8dbfff; }
+  .terminal-role { white-space: nowrap; clip-path: inset(0 100% 0 0); animation: terminal-type 1100ms steps(var(--role-length)) 350ms forwards; }
+  .terminal-caret { animation: caret-blink 1000ms steps(1) 6; }
+  @keyframes terminal-type { to { clip-path: inset(0 0 0 0); } }
+  @keyframes caret-blink { 50% { opacity: 0; } }
+  .hero-intro h1 { animation: boot-in 800ms 160ms both; }
+  .hero footer { animation: boot-in 800ms 240ms both; }
+  #attachment-dialog[open] { animation: window-open 180ms ease-out; }
+  #attachment-dialog[open]::backdrop { animation: backdrop-in 180ms ease-out; }
+  @keyframes boot-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes window-open { from { opacity: 0; transform: scale(.98) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  @keyframes backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+  
+  /* Retro Toast Notification */
+  .retro-toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 100;
+    background: #14243d;
+    border: 1px solid #8dbfff;
+    color: #edf3ff;
+    padding: 10px 16px;
+    font: 12px var(--font-mono);
+    border-radius: 4px;
+    box-shadow: 0 4px 16px #00000099, 0 0 10px #8dbfff44;
+    animation: toast-in 180ms ease-out;
+  }
+  @keyframes toast-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* CRT Scanlines Screen Overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.18) 50%);
+    background-size: 100% 3px;
+    z-index: 999;
+    opacity: 0.6;
+    transition: opacity 200ms;
+  }
+  html.crt-disabled body::before {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .attachment:hover, .scroll-cue:hover span, .hero-resume-btn:hover, .resume-attachment-btn:hover { transform: none; }
+    .terminal-role { clip-path: none; }
+  }
+  @media (max-width: 600px) {
+    .hero { padding: 24px 24px 96px; }
+    .system-status { font-size: 8px; letter-spacing: 0; }
+    .skill-list > div { grid-template-columns: minmax(0, 1fr); gap: 18px; padding: 24px 0; }
+    .stack-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; }
+    .stack-chip { font-size: 12px; gap: 8px; }
+    .hero-intro { padding-top: 44vh; padding-bottom: 32px; }
+    footer { font-size: 8px; letter-spacing: .06em; }
+    .hero-actions { width: 100%; justify-content: space-between; }
+  }
+</style>

@@ -1,0 +1,175 @@
+---
+import computer from '../assets/retropc.webp';
+---
+
+<div class="retro" aria-hidden="true">
+  <img src={computer.src} width={computer.width} height={computer.height} alt="" fetchpriority="high" />
+  <canvas data-retropc></canvas>
+</div>
+
+<script>
+  import { edgeStrength, flickerOpacity, preset, sampleCells } from '../lib/retropc';
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-retropc]')!;
+  const host = canvas.parentElement!;
+  const image = host.querySelector('img')!;
+  const context = canvas.getContext('2d', { alpha: false });
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
+  const hero = host.closest<HTMLElement>('.hero')!;
+  let targetX = 0;
+  let targetY = 0;
+  let offsetX = 0;
+  let offsetY = 0;
+  const artwork = document.createElement('canvas');
+  const art = artwork.getContext('2d')!;
+  const source = document.createElement('canvas');
+  const photo = source.getContext('2d')!;
+  let width = 0;
+  let height = 0;
+  let frame = 0;
+  let lastFrame = 0;
+  let inView = true;
+  let ready = false;
+  let resizeTimer: ReturnType<typeof setTimeout>;
+
+  function paint(time = 0) {
+    if (!context || !ready) return;
+    context.globalAlpha = 1;
+    context.fillStyle = '#080c14';
+    context.fillRect(0, 0, width, height);
+    context.globalAlpha = reducedMotion.matches ? 1 : flickerOpacity(time);
+    if (reducedMotion.matches) {
+      offsetX = 0;
+      offsetY = 0;
+    } else {
+      offsetX += (targetX - offsetX) * 0.1;
+      offsetY += (targetY - offsetY) * 0.1;
+    }
+    const floatY = reducedMotion.matches ? 0 : Math.sin(time / 1800) * 5;
+    context.drawImage(artwork, offsetX, offsetY + floatY);
+    context.globalAlpha = 1;
+  }
+
+  function tick(time: number) {
+    if (time - lastFrame >= 1000 / 30) {
+      paint(time);
+      lastFrame = time;
+    }
+    frame = requestAnimationFrame(tick);
+  }
+
+  function syncAnimation() {
+    cancelAnimationFrame(frame);
+    frame = 0;
+    if (!ready) return;
+    paint(performance.now());
+    if (!reducedMotion.matches && !document.hidden && inView) frame = requestAnimationFrame(tick);
+  }
+
+  function resize() {
+    if (!context || !image.naturalWidth) return;
+    width = Math.ceil(host.clientWidth);
+    height = Math.ceil(host.clientHeight);
+    if (!width || !height) return;
+    const ratio = Math.min(devicePixelRatio || 1, 2);
+    canvas.width = Math.round(width * ratio);
+    canvas.height = Math.round(height * ratio);
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    artwork.width = width;
+    artwork.height = height;
+    source.width = width;
+    source.height = height;
+
+    // Contain the whole computer on mobile; position it beside the name on desktop.
+    const photoWidth = Math.min(width * (width < 600 ? 0.9 : 0.55), height * 0.74);
+    const photoHeight = photoWidth * image.naturalHeight / image.naturalWidth;
+    const photoX = width < 600 ? (width - photoWidth) / 2 : width - photoWidth - width * 0.06;
+    const photoY = height * (width < 600 ? 0.13 : 0.1);
+    photo.clearRect(0, 0, width, height);
+    photo.drawImage(image, photoX, photoY, photoWidth, photoHeight);
+    const cells = sampleCells(photo.getImageData(0, 0, width, height).data, width, height);
+    art.clearRect(0, 0, width, height);
+    art.globalAlpha = preset.bgOpacity / 100;
+    art.drawImage(source, 0, 0);
+    art.globalAlpha = 1;
+    const size = preset.cellSize;
+    const columns = Math.ceil(width / size);
+    for (const [index, cell] of cells.entries()) {
+      if (!cell.alpha) continue;
+      art.globalAlpha = cell.alpha;
+      art.fillStyle = cell.color;
+      const inset = 0.5 * (1 - preset.density / 100);
+      art.fillRect(cell.x + inset, cell.y + inset, size - inset * 2, size - inset * 2);
+      art.fillStyle = '#0004';
+      art.fillRect(cell.x + inset, cell.y + size - 1.5, size - inset * 2, 1);
+      const edge = edgeStrength(cells, index, columns) * preset.edgeEmphasis / 100;
+      const radius = size * (0.16 + cell.luminance * 0.08);
+      art.beginPath();
+      art.arc(cell.x + size / 2 + 0.5, cell.y + size / 2 + 0.7, radius, 0, Math.PI * 2);
+      art.fillStyle = '#0006';
+      art.fill();
+      art.beginPath();
+      art.arc(cell.x + size / 2, cell.y + size / 2, radius, 0, Math.PI * 2);
+      art.fillStyle = `rgba(255,255,255,${0.15 + edge})`;
+      art.fill();
+    }
+    art.globalAlpha = 1;
+    photo.clearRect(0, 0, width, height);
+    photo.filter = `contrast(${preset.contrast}%) saturate(${preset.saturation}%) grayscale(${preset.grayscale}%)`;
+    photo.drawImage(artwork, 0, 0);
+    photo.filter = 'none';
+    art.clearRect(0, 0, width, height);
+    art.fillStyle = '#080c14';
+    art.fillRect(0, 0, width, height);
+    art.drawImage(source, 0, 0);
+    art.globalCompositeOperation = 'overlay';
+    art.globalAlpha = preset.tintOpacity / 100;
+    art.fillStyle = preset.tint;
+    art.fillRect(0, 0, width, height);
+    art.globalCompositeOperation = 'source-over';
+    art.globalAlpha = 1;
+    const vignette = art.createRadialGradient(width / 2, height * 0.4, 0, width / 2, height * 0.4, Math.hypot(width, height) / 2);
+    vignette.addColorStop(0.25, '#0000');
+    vignette.addColorStop(1, `rgba(0,0,0,${preset.vignette / 100})`);
+    art.fillStyle = vignette;
+    art.fillRect(0, 0, width, height);
+    ready = true;
+    host.dataset.ready = '';
+    syncAnimation();
+  }
+
+  hero.addEventListener('pointermove', event => {
+    if (reducedMotion.matches || !finePointer.matches || event.pointerType !== 'mouse') return;
+    const rect = hero.getBoundingClientRect();
+    targetX = ((event.clientX - rect.left) / rect.width - 0.5) * 28;
+    targetY = ((event.clientY - rect.top) / rect.height - 0.5) * 18;
+  }, { passive: true });
+  hero.addEventListener('pointerleave', () => { targetX = 0; targetY = 0; });
+  reducedMotion.addEventListener('change', () => { targetX = 0; targetY = 0; });
+
+  if (context) {
+    new ResizeObserver(() => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(resize, 100);
+    }).observe(host);
+    new IntersectionObserver(([entry]) => {
+      inView = entry!.isIntersecting;
+      syncAnimation();
+    }).observe(host);
+    image.addEventListener('load', resize, { once: true });
+    document.addEventListener('visibilitychange', syncAnimation);
+    reducedMotion.addEventListener('change', syncAnimation);
+    resize();
+  }
+</script>
+
+<style>
+  .retro { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  canvas { width: 100%; height: 100%; display: block; }
+  img { position: absolute; width: 100%; height: 100%; object-fit: contain; opacity: .22; }
+  .retro[data-ready] img { visibility: hidden; }
+  .retro::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, #080c1455 0%, transparent 24%, #080c1422 48%, #080c14 95%);
+  }
+</style>

@@ -1,0 +1,131 @@
+{
+  "firstName": "Nachthaphong",
+  "lastName": "Saengbut",
+  "role": "Fullstack Developer",
+  "email": "134nk.dev@gmail.com",
+  "line": "https://line.me/ti/p/gQ5jA-Gp9b",
+  "github": "134NKns",
+  "resumeUrl": "https://canva.link/6x7lkyzfejt3z78",
+  "summary": "I build web applications and develop private projects independently for commercial use. My work covers frontend, backend, business workflows and automation.",
+  "experience": {
+    "company": "I&I Group (iiG)",
+    "role": "Developer",
+    "period": "18 July 2022 – 31 August 2025",
+    "focus": "Salesforce · CRM development",
+    "description": "Developed Salesforce-based CRM systems and implemented functionality to support business requirements and workflows."
+  },
+  "education": "Information Technology · Udon Thani Rajabhat University",
+  "award": "Honorable Mention · National Software Contest (NSC 2021)",
+  "tradingProject": {
+    "title": "MT5 Trading Tools",
+    "stack": "MQL5 · MetaTrader 5",
+    "description": "Developed tools that visualize price structure, market state across timeframes, and Volume Profile using self-defined rules."
+  },
+  "rentalProject": {
+    "title": "SabaiJai — Rental & Retail System",
+    "stack": "Next.js · TypeScript · Hono · Supabase · LINE Messaging API",
+    "description": "Built an equipment rental and retail storefront with product browsing and rental details, plus LINE messages for payment status and return reminders. Screenshots use demo-store data."
+  },
+  "skills": [
+    {
+      "area": "Frontend",
+      "detail": "Previous experience with Angular.",
+      "tools": [
+        {
+          "name": "React",
+          "icon": "react"
+        },
+        {
+          "name": "Next.js",
+          "icon": "nextdotjs"
+        },
+        {
+          "name": "TypeScript",
+          "icon": "typescript"
+        },
+        {
+          "name": "Tailwind CSS",
+          "icon": "tailwindcss"
+        },
+        {
+          "name": "Angular",
+          "icon": "angular"
+        }
+      ]
+    },
+    {
+      "area": "Backend & databases",
+      "detail": "Previous projects with Django and MongoDB.",
+      "tools": [
+        {
+          "name": "Go",
+          "icon": "go"
+        },
+        {
+          "name": "Java",
+          "icon": "java"
+        },
+        {
+          "name": "Node.js",
+          "icon": "nodedotjs"
+        },
+        {
+          "name": "Hono",
+          "icon": "hono"
+        },
+        {
+          "name": "Python",
+          "icon": "python"
+        },
+        {
+          "name": "FastAPI",
+          "icon": "fastapi"
+        },
+        {
+          "name": "PostgreSQL",
+          "icon": "postgresql"
+        },
+        {
+          "name": "Supabase",
+          "icon": "supabase"
+        },
+        {
+          "name": "Django",
+          "icon": "django"
+        },
+        {
+          "name": "MongoDB",
+          "icon": "mongodb"
+        }
+      ]
+    },
+    {
+      "area": "Integrations & tools",
+      "detail": "LINE Messaging API / LIFF and deployment tooling.",
+      "tools": [
+        {
+          "name": "LINE",
+          "icon": "line"
+        },
+        {
+          "name": "Git",
+          "icon": "git"
+        },
+        {
+          "name": "Docker",
+          "icon": "docker"
+        }
+      ]
+    },
+    {
+      "area": "EA development",
+      "detail": "MQL5 / MetaTrader 5, implementing self-defined trading rules. Basic trading knowledge.",
+      "tools": []
+    }
+  ],
+  "restaurantProject": {
+    "title": "QuinR-rai — Restaurant Ordering",
+    "stack": "React · TypeScript · Vite · Hono · Supabase",
+    "description": "Built a restaurant ordering interface with menu browsing, item options, promotions and a responsive mobile layout. Screenshots use a test store."
+  }
+}

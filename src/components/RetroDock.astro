@@ -1,0 +1,383 @@
+---
+import profile from '../data/profile.json';
+import resumeImage from '../assets/nachthaphong-resume.webp';
+
+const items = [
+  { id: 'home', label: 'Home', path: 'M2 7 8 2l6 5v7H9v-4H7v4H2Z' },
+  { id: 'about', label: 'About', path: 'M6 2h4v4H6ZM4 9h8v5H4Z' },
+  { id: 'experience', label: 'Work', path: 'M5 4V2h6v2M2 5h12v9H2ZM2 8h12M7 8v2h2V8' },
+  { id: 'skills', label: 'Skills', path: 'M1 2h14v12H1ZM4 5l3 3-3 3M9 11h3' },
+  { id: 'contact', label: 'Mail', path: 'M2 4h12v9H2ZM2 4l6 5 6-5' },
+];
+---
+
+<!-- Retro Start Menu Pop-up -->
+<div id="start-menu" class="start-menu" hidden>
+  <div class="start-menu-sidebar">
+    <span class="sidebar-text">134NK <b>OS</b></span>
+  </div>
+  <div class="start-menu-content">
+    <div class="start-user-banner">
+      <div class="start-avatar">134</div>
+      <div class="start-user-info">
+        <span class="user-name">Nachthaphong Saengbut</span>
+        <span class="user-role">Fullstack Developer</span>
+      </div>
+    </div>
+    <div class="menu-divider"></div>
+    <ul class="start-menu-list">
+      <li>
+        <a href={resumeImage.src} data-title="Nachthaphong-Resume.webp" aria-haspopup="dialog" aria-controls="attachment-dialog" class="menu-item highlight attachment">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/></svg>
+          <div class="menu-item-text">
+            <span>View Resume / CV</span>
+            <small>Image preview ↗</small>
+          </div>
+          <span class="menu-badge">IMAGE</span>
+        </a>
+      </li>
+      <li>
+        <button type="button" class="menu-item" id="start-terminal-btn">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2z"/><path d="M3.146 4.354a.5.5 0 0 1 .708 0L6.707 7.207a.5.5 0 0 1 0 .708L3.854 10.768a.5.5 0 0 1-.708-.708L5.793 7.561 3.146 4.914a.5.5 0 0 1 0-.708zM7.5 10.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5z"/></svg>
+          <div class="menu-item-text">
+            <span>Terminal CLI (Console)</span>
+            <small>Interactive command prompt</small>
+          </div>
+          <span class="menu-kbd">`</span>
+        </button>
+      </li>
+      <li class="menu-divider"></li>
+      <li>
+        <button type="button" class="menu-item" id="start-sound-toggle">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-.708.707A7.476 7.476 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/><path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.483 5.483 0 0 1 11.025 8a5.483 5.483 0 0 1-1.61 3.89l.706.706z"/><path d="M8.707 11.182A4.486 4.486 0 0 0 10.025 8a4.486 4.486 0 0 0-1.318-3.182L8 5.525A3.489 3.489 0 0 1 9.025 8 3.49 3.49 0 0 1 8 10.475l.707.707zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06z"/></svg>
+          <div class="menu-item-text">
+            <span>Sound FX</span>
+            <small id="start-sound-state">Muted (Click to enable)</small>
+          </div>
+        </button>
+      </li>
+      <li>
+        <button type="button" class="menu-item" id="start-crt-toggle">
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M0 4s0-2 2-2h12s2 0 2 2v6s0 2-2 2h-4c0 .667.083 1.167.25 1.5H11a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1h.75c.167-.333.25-.833.25-1.5H2s-2 0-2-2V4zm1.398-.855a.758.758 0 0 0-.295.539l-.003.02V10c0 .414.336.75.75.75h12.2a.75.75 0 0 0 .75-.75V3.704a.75.75 0 0 0-.75-.75H1.398z"/></svg>
+          <div class="menu-item-text">
+            <span>CRT Scanlines</span>
+            <small id="start-crt-state">Enabled</small>
+          </div>
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<nav class="dock" aria-label="Profile navigation">
+  <div class="dock-items">
+    {items.map((item, index) => (
+      <a class={index === 0 ? 'start' : undefined} href={`#${item.id}`} aria-label={item.label} aria-current={index === 0 ? 'location' : undefined}>
+        {index === 0 ? <svg viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path fill="#809cc6" d="M1 2h6v5H1z" /><path fill="#b2c6e5" d="M9 2h6v5H9z" /><path fill="#435c81" d="M1 9h6v5H1z" /><path fill="#7288aa" d="M9 9h6v5H9z" /></svg> : <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="miter" shape-rendering="crispEdges"><path d={item.path} /></svg>}
+        <span class="label" aria-hidden="true">{index === 0 ? 'start' : item.label}</span>
+      </a>
+    ))}
+  </div>
+  <div class="tray" aria-label="System Tray">
+    <button type="button" class="tray-sound-btn" id="tray-sound-btn" aria-label="Toggle retro sound effects" title="Toggle sound effects">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06z"/></svg>
+    </button>
+    <span class="status-indicator" title="Available for work"><i aria-hidden="true"></i></span>
+    <span class="tray-clock" id="tray-clock" aria-label="System time">00:00:00</span>
+  </div>
+</nav>
+
+<script>
+  import { isSoundEnabled, toggleSound, playClick, playWindowOpen } from '../lib/retrosound';
+
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.dock-items a')];
+  const sections = links.map(link => document.getElementById(link.hash.slice(1))!);
+  const startBtn = document.querySelector<HTMLAnchorElement>('.dock-items a.start')!;
+  const startMenu = document.getElementById('start-menu')!;
+  const traySoundBtn = document.getElementById('tray-sound-btn')!;
+  const startSoundBtn = document.getElementById('start-sound-toggle')!;
+  const startSoundState = document.getElementById('start-sound-state')!;
+  const startTerminalBtn = document.getElementById('start-terminal-btn')!;
+  const startCrtToggle = document.getElementById('start-crt-toggle')!;
+  const startCrtState = document.getElementById('start-crt-state')!;
+  const trayClock = document.getElementById('tray-clock')!;
+
+  // Clock in Tray
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    if (trayClock) trayClock.textContent = `${h}:${m}:${s}`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // Start Menu Toggle
+  function toggleStartMenu(show?: boolean) {
+    const willShow = typeof show === 'boolean' ? show : startMenu.hasAttribute('hidden');
+    if (willShow) {
+      startMenu.removeAttribute('hidden');
+      playWindowOpen();
+    } else {
+      startMenu.setAttribute('hidden', '');
+      playClick();
+    }
+  }
+
+  startBtn.addEventListener('click', () => {
+    toggleStartMenu();
+  });
+
+  // Close Start Menu on outside click
+  document.addEventListener('click', (e) => {
+    if (!startMenu.hasAttribute('hidden') && !startMenu.contains(e.target as Node) && !startBtn.contains(e.target as Node)) {
+      startMenu.setAttribute('hidden', '');
+    }
+  });
+
+  // Sound Toggle Handlers
+  function updateSoundUI() {
+    const enabled = isSoundEnabled();
+    traySoundBtn.classList.toggle('active', enabled);
+    startSoundState.textContent = enabled ? 'Enabled' : 'Muted (Click to enable)';
+  }
+
+  traySoundBtn.addEventListener('click', () => {
+    toggleSound();
+    updateSoundUI();
+  });
+
+  startSoundBtn.addEventListener('click', () => {
+    toggleSound();
+    updateSoundUI();
+  });
+
+  updateSoundUI();
+
+  // Terminal Launcher
+  startTerminalBtn.addEventListener('click', () => {
+    startMenu.setAttribute('hidden', '');
+    window.dispatchEvent(new CustomEvent('open-retro-terminal'));
+  });
+
+  // CRT Scanlines Toggle
+  let crtEnabled = true;
+  startCrtToggle.addEventListener('click', () => {
+    crtEnabled = !crtEnabled;
+    document.documentElement.classList.toggle('crt-disabled', !crtEnabled);
+    startCrtState.textContent = crtEnabled ? 'Enabled' : 'Disabled';
+    playClick();
+  });
+
+  // Navigation scroll tracking
+  let scheduled = false;
+  function update() {
+    let active = 0;
+    sections.forEach((section, index) => {
+      if (section && section.getBoundingClientRect().top <= innerHeight * 0.2) active = index;
+    });
+    if (scrollY + innerHeight >= document.documentElement.scrollHeight - 2) active = sections.length - 1;
+    links.forEach((link, index) => {
+      if (index === active) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+    const range = document.documentElement.scrollHeight - innerHeight;
+    document.querySelector<HTMLElement>('.dock')!.style.setProperty('--reading-progress', String(range > 0 ? Math.min(1, Math.max(0, scrollY / range)) : 0));
+    scheduled = false;
+  }
+  function schedule() {
+    if (!scheduled) {
+      scheduled = true;
+      requestAnimationFrame(update);
+    }
+  }
+  addEventListener('scroll', schedule, { passive: true });
+  addEventListener('resize', schedule);
+  update();
+</script>
+
+<style>
+  .dock {
+    position: fixed; z-index: 20; inset: auto 0 0; display: flex;
+    height: calc(40px + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom);
+    background: linear-gradient(#363f4c 0%, #202833 12%, #19202b 85%, #10151c 100%);
+    box-shadow: inset 0 1px #657183;
+    font-family: var(--font-body);
+  }
+  .dock::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #8dbfff; transform: scaleX(var(--reading-progress, 0)); transform-origin: left; pointer-events: none; }
+  .dock-items { display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0; height: 40px; padding-right: 8px; }
+  a { position: relative; display: flex; align-items: center; gap: 8px; flex: 0 1 148px; min-width: 44px; height: 30px; padding: 0 12px; border: 1px solid #141b25; border-radius: 3px; background: linear-gradient(#353f4d, #29313e); box-shadow: inset 1px 1px #5a6677; color: #d8e8dc; text-decoration: none; }
+  svg { flex-shrink: 0; transition: transform 160ms; }
+  a:hover svg { transform: translateY(-1px); }
+  a:active svg { transform: translateY(1px); }
+  .label { font-size: 11px; }
+  a:hover, a:focus-visible { background: linear-gradient(#45546b, #354358); text-decoration: none; }
+  a[aria-current] { color: #9cbae8; background: #141c27; box-shadow: inset 1px 1px 3px #090f17; border-color: #50627c; }
+  a.start { flex: 0 0 96px; justify-content: center; height: 40px; border: 0; border-radius: 0 14px 14px 0; padding: 0 12px; margin-right: 4px; background: linear-gradient(#7389aa 0%, #3e5475 15%, #30435f 80%, #212f45 100%); box-shadow: inset 0 2px #a0b0c7, inset -2px 0 3px #152236; }
+  .start .label { font-size: 18px; font-style: italic; font-weight: 700; text-shadow: 1px 1px #17273e; }
+  a.start:hover { background: linear-gradient(#91a3bd, #546a8b 20%, #3b5070); }
+  a:focus-visible { outline: 2px solid #b0d5ff; outline-offset: -3px; }
+  
+  /* System Tray */
+  .tray {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    height: 40px;
+    background: linear-gradient(#425066, #2c384b 20%, #232e3e);
+    border-left: 1px solid #151e2c;
+    box-shadow: inset 1px 0 #69778b;
+    color: #d8e8dc;
+  }
+  .tray-sound-btn {
+    background: transparent;
+    border: 0;
+    color: #7b93b5;
+    cursor: pointer;
+    padding: 4px;
+    display: grid;
+    place-items: center;
+    border-radius: 3px;
+  }
+  .tray-sound-btn:hover { color: #fff; background: #324054; }
+  .tray-sound-btn.active { color: #39d353; }
+  .status-indicator i {
+    display: block;
+    width: 6px;
+    height: 6px;
+    background: #39d353;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #39d353;
+    animation: status-pulse 2s infinite;
+  }
+  @keyframes status-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .tray-clock {
+    font: 11px var(--font-mono);
+    color: #bbd4f5;
+    letter-spacing: 0.05em;
+  }
+
+  /* Start Menu */
+  .start-menu {
+    position: fixed;
+    z-index: 25;
+    bottom: 42px;
+    left: 4px;
+    width: 290px;
+    background: #192435;
+    border: 2px solid #587194;
+    border-radius: 4px 4px 0 0;
+    box-shadow: 4px 4px 0 #00000088, inset 1px 1px #809cc6;
+    display: flex;
+    overflow: hidden;
+    font-family: var(--font-body);
+    animation: start-popup 160ms ease-out;
+  }
+  .start-menu[hidden] {
+    display: none !important;
+  }
+  @keyframes start-popup { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .start-menu-sidebar {
+    width: 32px;
+    background: linear-gradient(180deg, #1f3b64, #12243d);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 12px;
+    border-right: 1px solid #3d5578;
+  }
+  .sidebar-text {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font: bold 14px var(--font-display);
+    color: #8dbfff;
+    letter-spacing: 0.1em;
+  }
+  .sidebar-text b { color: #edf3ff; }
+  .start-menu-content { flex: 1; padding: 6px; }
+  .start-user-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: #101a28;
+    border-radius: 3px;
+    margin-bottom: 6px;
+  }
+  .start-avatar {
+    width: 30px;
+    height: 30px;
+    background: #254168;
+    border: 1px solid #486996;
+    color: #8dbfff;
+    font: bold 11px var(--font-mono);
+    display: grid;
+    place-items: center;
+    border-radius: 3px;
+  }
+  .start-user-info { display: flex; flex-direction: column; }
+  .user-name { font-size: 12px; font-weight: 600; color: #edf3ff; }
+  .user-role { font-size: 10px; color: #8faad0; }
+  .menu-divider { height: 1px; background: #2f4460; margin: 4px 0; }
+  .start-menu-list { list-style: none; padding: 0; margin: 0; }
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 10px;
+    background: transparent;
+    border: 0;
+    color: #d6e3f5;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 3px;
+    text-decoration: none;
+    font-family: inherit;
+    transition: background 120ms, color 120ms;
+  }
+  .menu-item:hover {
+    background: #2b456b;
+    color: #fff;
+  }
+  .menu-item.highlight {
+    background: #193152;
+    border: 1px solid #3e608e;
+  }
+  .menu-item.highlight:hover {
+    background: #2b4d7c;
+  }
+  .menu-item-text { flex: 1; display: flex; flex-direction: column; }
+  .menu-item-text span { font-size: 12px; font-weight: 500; }
+  .menu-item-text small { font-size: 10px; color: #8faad0; }
+  .menu-badge {
+    font: 9px var(--font-mono);
+    background: #39d35322;
+    color: #39d353;
+    border: 1px solid #39d35366;
+    padding: 2px 4px;
+    border-radius: 2px;
+  }
+  .menu-kbd {
+    font: 10px var(--font-mono);
+    background: #111a26;
+    color: #8faad0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid #344b6c;
+  }
+
+  @media (max-width: 480px) {
+    .tray { padding: 0 10px; gap: 8px; }
+    .tray-clock { display: none; }
+    .dock-items { padding-right: 4px; }
+    a { flex: 1; justify-content: center; padding: 0 6px; }
+    a.start { flex-basis: 76px; margin-right: 0; gap: 5px; padding: 0 8px; }
+    .start .label { font-size: 16px; }
+    a:not(.start) .label { display: none; position: absolute; bottom: 38px; padding: 5px 8px; background: #171e29; border: 1px solid #586475; color: #e0ecff; }
+    a:not(.start):hover .label, a:not(.start):focus-visible .label { display: block; }
+    .start-menu { width: calc(100vw - 16px); left: 8px; }
+  }
+</style>

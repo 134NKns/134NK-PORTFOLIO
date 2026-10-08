@@ -1,0 +1,318 @@
+---
+import profile from '../data/profile.json';
+---
+
+<dialog id="retro-terminal-modal" class="retro-terminal-dialog" aria-labelledby="terminal-title">
+  <div class="terminal-window">
+    <div class="terminal-titlebar">
+      <div class="titlebar-left">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H2z"/><path d="M3.146 4.354a.5.5 0 0 1 .708 0L6.707 7.207a.5.5 0 0 1 0 .708L3.854 10.768a.5.5 0 0 1-.708-.708L5.793 7.561 3.146 4.914a.5.5 0 0 1 0-.708zM7.5 10.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1H8a.5.5 0 0 1-.5-.5z"/></svg>
+        <span id="terminal-title">TERMINAL.EXE — 134NK v1.0.4</span>
+      </div>
+      <div class="titlebar-actions">
+        <button id="terminal-close-btn" aria-label="Close terminal" type="button">×</button>
+      </div>
+    </div>
+    <div class="terminal-body" id="terminal-output-container">
+      <div class="terminal-history" id="terminal-history">
+        <div class="terminal-line banner">134NK RETRO TERMINAL [Version 1.0.4]</div>
+        <div class="terminal-line banner">Type '<span class="cmd-highlight">help</span>' to view available commands.</div>
+        <div class="terminal-line banner-sub">Tip: Type '<span class="cmd-highlight">resume</span>' to open CV, or '<span class="cmd-highlight">sudo hire</span>' to proceed.</div>
+      </div>
+      <form class="terminal-input-row" id="terminal-form">
+        <span class="prompt" aria-hidden="true">guest@134nk:~$</span>
+        <input type="text" id="terminal-input" class="terminal-input" autocomplete="off" spellcheck="false" aria-label="Terminal command input" autofocus />
+      </form>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  import profile from '../data/profile.json';
+  import { playKeypress, playWindowOpen, playClick } from '../lib/retrosound';
+
+  const modal = document.getElementById('retro-terminal-modal') as HTMLDialogElement;
+  const form = document.getElementById('terminal-form') as HTMLFormElement;
+  const input = document.getElementById('terminal-input') as HTMLInputElement;
+  const history = document.getElementById('terminal-history') as HTMLDivElement;
+  const closeBtn = document.getElementById('terminal-close-btn') as HTMLButtonElement;
+  const container = document.getElementById('terminal-output-container') as HTMLDivElement;
+
+  function appendLine(text: string, className = '') {
+    const div = document.createElement('div');
+    div.className = `terminal-line ${className}`;
+    div.innerHTML = text;
+    history.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function handleCommand(rawCmd: string) {
+    const cmd = rawCmd.trim().toLowerCase();
+    appendLine(`<span class="prompt">guest@134nk:~$</span> ${rawCmd}`);
+
+    if (!cmd) return;
+
+    switch (cmd) {
+      case 'help':
+        appendLine(`
+AVAILABLE COMMANDS:
+  <span class="cmd-highlight">about</span>      - Personal summary and background
+  <span class="cmd-highlight">skills</span>     - Technical stack and toolsets
+  <span class="cmd-highlight">projects</span>   - Selected development projects
+  <span class="cmd-highlight">resume</span>     - Open official Resume / CV in new tab
+  <span class="cmd-highlight">contact</span>    - Email and social connections
+  <span class="cmd-highlight">clear</span>      - Clear terminal screen
+  <span class="cmd-highlight">matrix</span>     - Run matrix digital code rain
+  <span class="cmd-highlight">sudo hire</span>  - Send employment offer
+  <span class="cmd-highlight">exit</span>       - Close this terminal window
+        `);
+        break;
+
+      case 'about':
+        appendLine(`
+NAME: ${profile.firstName} ${profile.lastName}
+ROLE: ${profile.role}
+EDUCATION: ${profile.education}
+AWARD: ${profile.award}
+SUMMARY: ${profile.summary}
+        `);
+        break;
+
+      case 'skills':
+        appendLine(`
+TECHNICAL TOOLKIT:
+• Frontend: React, Next.js, TypeScript, Tailwind CSS, Angular
+• Backend & DB: Go, Java, Node.js, Hono, Python, FastAPI, PostgreSQL, Supabase, MongoDB
+• Integrations: LINE Messaging API / LIFF, Git, Docker
+• Trading: MQL5 / MetaTrader 5
+        `);
+        break;
+
+      case 'projects':
+        appendLine(`
+FEATURED PROJECTS:
+1. ${profile.restaurantProject.title} (${profile.restaurantProject.stack})
+   ${profile.restaurantProject.description}
+
+2. ${profile.rentalProject.title} (${profile.rentalProject.stack})
+   ${profile.rentalProject.description}
+
+3. ${profile.tradingProject.title} (${profile.tradingProject.stack})
+   ${profile.tradingProject.description}
+        `);
+        break;
+
+      case 'resume':
+      case 'cv':
+        appendLine(`Opening Resume (${profile.resumeUrl})...`);
+        window.open(profile.resumeUrl, '_blank');
+        break;
+
+      case 'contact':
+        appendLine(`
+CONTACT DETAILS:
+• Email: <a href="mailto:${profile.email}" class="terminal-link">${profile.email}</a>
+• LINE:  <a href="${profile.line}" target="_blank" class="terminal-link">${profile.line}</a>
+• GitHub: <a href="https://github.com/${profile.github}" target="_blank" class="terminal-link">https://github.com/${profile.github}</a>
+        `);
+        break;
+
+      case 'sudo hire':
+      case 'hire':
+        appendLine(`
+<span style="color:#39d353;">[AUTHENTICATION SUCCESSFUL]</span>
+Initiating onboarding sequence for Nachthaphong Saengbut...
+Redirecting to draft email...
+        `);
+        setTimeout(() => {
+          window.location.href = `mailto:${profile.email}?subject=Job%20Opportunity%20-%20Fullstack%20Developer`;
+        }, 1000);
+        break;
+
+      case 'matrix':
+        appendLine('<span style="color:#39d353;">WAKE UP, NEO... THE MATRIX HAS YOU.</span>');
+        break;
+
+      case 'clear':
+      case 'cls':
+        history.innerHTML = '';
+        break;
+
+      case 'exit':
+      case 'quit':
+        modal.close();
+        break;
+
+      default:
+        appendLine(`command not found: ${cmd}. Type '<span class="cmd-highlight">help</span>' for a list of commands.`, 'error');
+        break;
+    }
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const value = input.value;
+    input.value = '';
+    handleCommand(value);
+    playClick();
+  });
+
+  input.addEventListener('keydown', () => {
+    playKeypress();
+  });
+
+  closeBtn.addEventListener('click', () => {
+    modal.close();
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.close();
+  });
+
+  // Global trigger for opening terminal
+  window.addEventListener('open-retro-terminal', () => {
+    modal.showModal();
+    playWindowOpen();
+    setTimeout(() => input.focus(), 50);
+  });
+
+  // Keyboard shortcut: backtick or t
+  document.addEventListener('keydown', (e) => {
+    if (e.key === '`' && document.activeElement !== input) {
+      e.preventDefault();
+      if (modal.open) modal.close();
+      else {
+        modal.showModal();
+        playWindowOpen();
+        setTimeout(() => input.focus(), 50);
+      }
+    }
+  });
+</script>
+
+<style>
+  .retro-terminal-dialog {
+    padding: 0;
+    border: 1px solid #48658d;
+    background: #060b13;
+    color: #c9ddf8;
+    border-radius: 6px;
+    box-shadow: 0 10px 40px #000000cc, 0 0 0 1px #1a2a40;
+    max-width: min(680px, 94vw);
+    width: 680px;
+    margin: auto;
+  }
+
+  .retro-terminal-dialog::backdrop {
+    background: #000000aa;
+    backdrop-filter: blur(2px);
+  }
+
+  .terminal-window {
+    display: flex;
+    flex-direction: column;
+    height: 440px;
+    font-family: var(--font-mono);
+  }
+
+  .terminal-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    background: linear-gradient(#203450, #132033);
+    border-bottom: 1px solid #30496d;
+    color: #9cbfe8;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+  }
+
+  .titlebar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .titlebar-actions button {
+    width: 22px;
+    height: 22px;
+    border: 1px solid #48658d;
+    background: #19273c;
+    color: #c9ddf8;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    transition: background 140ms;
+  }
+
+  .titlebar-actions button:hover {
+    background: #c53030;
+    color: #fff;
+    border-color: #e53e3e;
+  }
+
+  .terminal-body {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    font-size: 13px;
+    line-height: 1.6;
+    background: #060b13;
+  }
+
+  .terminal-line {
+    margin-bottom: 6px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .terminal-line.banner {
+    color: #8dbfff;
+    font-weight: bold;
+  }
+
+  .terminal-line.banner-sub {
+    color: #7b97bd;
+    margin-bottom: 14px;
+  }
+
+  .terminal-line.error {
+    color: #ff6b6b;
+  }
+
+  :global(.cmd-highlight) {
+    color: #39d353;
+    font-weight: bold;
+  }
+
+  :global(.terminal-link) {
+    color: #8dbfff;
+    text-decoration: underline;
+  }
+
+  .terminal-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .prompt {
+    color: #39d353;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .terminal-input {
+    flex: 1;
+    background: transparent;
+    border: 0;
+    outline: none;
+    color: #edf3ff;
+    font-family: inherit;
+    font-size: inherit;
+  }
+</style>

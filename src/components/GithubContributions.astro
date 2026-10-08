@@ -1,0 +1,925 @@
+---
+import cachedContributions from '../data/contributions.json';
+
+interface Props {
+  username?: string;
+}
+const { username = '134NKns' } = Astro.props;
+
+interface DayData {
+  date: string;
+  count: number;
+  level: number;
+}
+
+const allDays: DayData[] = (cachedContributions.contributions as DayData[]) || [];
+const totalContributions = ((cachedContributions.total as Record<string, number>)?.['2026']) ||
+  ((cachedContributions.total as Record<string, number>)?.lastYear) ||
+  allDays.reduce((a, b) => a + (b.count || 0), 0);
+
+// Compute columns (53 weeks x 7 days) starting from Jan 1, 2026
+const firstDayIndex = allDays.length > 0 ? new Date(allDays[0]!.date).getDay() : 0;
+const columns: (DayData | null)[][] = [];
+let currentColumn: (DayData | null)[] = [];
+for (let i = 0; i < firstDayIndex; i++) currentColumn.push(null);
+allDays.forEach(day => {
+  currentColumn.push(day);
+  if (currentColumn.length === 7) {
+    columns.push(currentColumn);
+    currentColumn = [];
+  }
+});
+if (currentColumn.length > 0) {
+  while (currentColumn.length < 7) currentColumn.push(null);
+  columns.push(currentColumn);
+}
+
+// Compute months
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+let lastMonth = -1;
+const monthLabels = columns.map(col => {
+  const first = col.find(d => d !== null);
+  if (!first) return '';
+  const m = new Date(first.date).getMonth();
+  if (m !== lastMonth) {
+    lastMonth = m;
+    return monthNames[m];
+  }
+  return '';
+});
+
+// Compute stats
+let busiest = 0;
+let busiestDate = '';
+let currentStreak = 0;
+let maxStreak = 0;
+let streakStart = '';
+let streakEnd = '';
+let tempStreak = 0;
+let tempStart = '';
+
+allDays.forEach((day, idx) => {
+  if (day.count > busiest) {
+    busiest = day.count;
+    busiestDate = day.date;
+  }
+  if (day.count > 0) {
+    if (tempStreak === 0) tempStart = day.date;
+    tempStreak++;
+    if (tempStreak > maxStreak) {
+      maxStreak = tempStreak;
+      streakStart = tempStart;
+      streakEnd = day.date;
+    }
+  } else {
+    tempStreak = 0;
+  }
+  if (idx === allDays.length - 1) {
+    for (let j = allDays.length - 1; j >= 0; j--) {
+      if (allDays[j] && allDays[j]!.count > 0) currentStreak++;
+      else if (j < allDays.length - 2) break;
+    }
+  }
+});
+
+const startDate = allDays.length > 0 ? new Date(allDays[0]!.date) : new Date(2026, 0, 1);
+const endDate = allDays.length > 0 ? new Date(allDays[allDays.length - 1]!.date) : new Date(2026, 11, 31);
+const periodRange = `${monthNames[startDate.getMonth()]} ${startDate.getDate()}, ${startDate.getFullYear()} — ${monthNames[endDate.getMonth()]} ${endDate.getDate()}, ${endDate.getFullYear()}`;
+const busiestDateStr = busiestDate ? `${monthNames[new Date(busiestDate).getMonth()]} ${new Date(busiestDate).getDate()}` : '--';
+const streakDatesStr = (streakStart && streakEnd) ? `${monthNames[new Date(streakStart).getMonth()]} ${new Date(streakStart).getDate()} — ${monthNames[new Date(streakEnd).getMonth()]} ${new Date(streakEnd).getDate()}` : '--';
+---
+
+<div class="github-graph-card" data-github-username={username}>
+  <div class="github-graph-header">
+    <div class="github-title-group">
+      <span class="github-icon" aria-hidden="true">
+        <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      </span>
+      <h3 class="github-heading"><span id="gh-total-header">{totalContributions.toLocaleString()}</span> contributions in 2026</h3>
+    </div>
+    <div class="view-toggles" role="tablist" aria-label="Contribution view mode">
+      <button class="toggle-btn active" id="view-2d-btn" role="tab" aria-selected="true" aria-label="2D Grid view" title="2D Grid View">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3z"/></svg>
+      </button>
+      <button class="toggle-btn" id="view-3d-btn" role="tab" aria-selected="false" aria-label="3D Isometric view" title="3D Isometric View">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5a.5.5 0 0 0-.346.47v7.974a.5.5 0 0 0 .33.473l5.968 2.473a.5.5 0 0 0 .372 0l5.968-2.473a.5.5 0 0 0 .33-.473V3.97a.5.5 0 0 0-.346-.47L8.186 1.113zM8 2.197l5.12 2.05-2.27 1.008-5.116-2.05L8 2.197zM2.5 4.675l4.5 1.803v7.027L2.5 11.66V4.675zm5.5 8.83V6.478l4.5-1.803v6.985L8 13.505z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="graph-container">
+    <!-- 2D View Container (Pre-rendered for instant 0ms SSR) -->
+    <div id="graph-2d" class="graph-viewport active">
+      <div class="grid-scroll">
+        <div class="months-row" id="gh-months">
+          {monthLabels.map(label => <span>{label}</span>)}
+        </div>
+        <div class="grid-with-days">
+          <div class="days-col">
+            <span>Mon</span>
+            <span>Wed</span>
+            <span>Fri</span>
+          </div>
+          <div class="grid-cells" id="gh-grid">
+            {columns.map(col => (
+              <div class="grid-col">
+                {col.map(day => (
+                  <div
+                    class={day ? `day-cell level-${day.level}` : 'day-cell empty'}
+                    data-date={day?.date}
+                    data-count={day ? String(day.count) : undefined}
+                  ></div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3D Isometric View Container -->
+    <div id="graph-3d" class="graph-viewport">
+      <canvas id="gh-canvas-3d"></canvas>
+      <div class="canvas-controls">
+        <button type="button" id="reset-3d-btn" class="reset-btn" title="Reset Camera Angle">↺ Reset View</button>
+        <div class="canvas-hint">Drag to rotate • Hover to inspect</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Footer Row -->
+  <div class="graph-stats">
+    <div class="stat-card">
+      <span class="stat-label">2026 total</span>
+      <div class="stat-value-group">
+        <span class="stat-value" id="stat-total">{totalContributions.toLocaleString()}</span>
+        <span class="stat-unit">contributions</span>
+      </div>
+      <span class="stat-period" id="stat-period-range">{periodRange}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Busiest day</span>
+      <div class="stat-value-group">
+        <span class="stat-value" id="stat-busiest">{busiest}</span>
+        <span class="stat-unit">contributions</span>
+      </div>
+      <span class="stat-period" id="stat-busiest-date">{busiestDateStr}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Longest streak</span>
+      <div class="stat-value-group">
+        <span class="stat-value" id="stat-streak">{maxStreak}</span>
+        <span class="stat-unit">days</span>
+      </div>
+      <span class="stat-period" id="stat-streak-dates">{streakDatesStr}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Current streak</span>
+      <div class="stat-value-group">
+        <span class="stat-value" id="stat-current-streak">{currentStreak}</span>
+        <span class="stat-unit">days</span>
+      </div>
+      <span class="stat-period" id="stat-current-streak-dates">{currentStreak > 0 ? 'Active now' : 'Resting'}</span>
+    </div>
+  </div>
+
+  <div class="graph-footer">
+    <span class="helper-text">Hover a day for details</span>
+    <div class="legend">
+      <span>Less</span>
+      <span class="level-box level-0"></span>
+      <span class="level-box level-1"></span>
+      <span class="level-box level-2"></span>
+      <span class="level-box level-3"></span>
+      <span class="level-box level-4"></span>
+      <span>More</span>
+    </div>
+  </div>
+
+  <!-- Floating Tooltip -->
+  <div id="gh-tooltip" class="gh-tooltip" hidden></div>
+</div>
+
+<script>
+  import cachedContributions from '../data/contributions.json';
+
+  const root = document.querySelector<HTMLElement>('.github-graph-card')!;
+  const tooltip = document.getElementById('gh-tooltip')!;
+  const btn2D = document.getElementById('view-2d-btn')!;
+  const btn3D = document.getElementById('view-3d-btn')!;
+  const view2D = document.getElementById('graph-2d')!;
+  const view3D = document.getElementById('graph-3d')!;
+  const canvas3D = document.getElementById('gh-canvas-3d') as HTMLCanvasElement;
+  const resetBtn = document.getElementById('reset-3d-btn');
+
+  const allDays = (cachedContributions.contributions as { date: string; count: number; level: number }[]) || [];
+  let is3DInitialized = false;
+
+  // Tooltip listeners on 2D day cells
+  document.querySelectorAll<HTMLElement>('.day-cell:not(.empty)').forEach(cell => {
+    cell.addEventListener('mouseenter', () => {
+      const date = cell.dataset.date;
+      const count = Number(cell.dataset.count || 0);
+      if (date) {
+        const d = new Date(date);
+        const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        tooltip.textContent = `${count === 0 ? 'No' : count.toLocaleString()} contribution${count === 1 ? '' : 's'} on ${dateStr}`;
+        tooltip.hidden = false;
+        const rect = cell.getBoundingClientRect();
+        const rootRect = root.getBoundingClientRect();
+        tooltip.style.left = `${rect.left - rootRect.left + rect.width / 2}px`;
+        tooltip.style.top = `${rect.top - rootRect.top - 32}px`;
+      }
+    });
+
+    cell.addEventListener('mouseleave', () => {
+      tooltip.hidden = true;
+    });
+  });
+
+  // View Switching
+  btn2D?.addEventListener('click', () => {
+    btn2D.classList.add('active');
+    btn2D.setAttribute('aria-selected', 'true');
+    btn3D.classList.remove('active');
+    btn3D.setAttribute('aria-selected', 'false');
+    view2D.classList.add('active');
+    view3D.classList.remove('active');
+    tooltip.hidden = true;
+  });
+
+  btn3D?.addEventListener('click', () => {
+    btn3D.classList.add('active');
+    btn3D.setAttribute('aria-selected', 'true');
+    btn2D.classList.remove('active');
+    btn2D.setAttribute('aria-selected', 'false');
+    view3D.classList.add('active');
+    view2D.classList.remove('active');
+    tooltip.hidden = true;
+    if (!is3DInitialized) {
+      init3D();
+      is3DInitialized = true;
+    }
+    render3DView();
+  });
+
+  // 3D Isometric View Canvas Renderer
+  const DEFAULT_ANGLE_X = 0.58;
+  const DEFAULT_ANGLE_Y = -0.62;
+  let angleX = DEFAULT_ANGLE_X;
+  let angleY = DEFAULT_ANGLE_Y;
+  let isDragging = false;
+  let lastMouseX = 0;
+  let lastMouseY = 0;
+  let hoveredIndex = -1;
+
+  interface RenderedBlock {
+    index: number;
+    screenX: number;
+    screenY: number;
+    scaledH: number;
+    scaledHw: number;
+    scaledHh: number;
+    count: number;
+    level: number;
+    date: string;
+    depth: number;
+  }
+  let currentRenderedBlocks: RenderedBlock[] = [];
+
+  function init3D() {
+    const ctx = canvas3D.getContext('2d')!;
+    const resize = () => {
+      const rect = view3D.getBoundingClientRect();
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      const displayHeight = Math.max(340, Math.min(420, rect.width * 0.46));
+      view3D.style.height = `${displayHeight}px`;
+      canvas3D.width = rect.width * ratio;
+      canvas3D.height = displayHeight * ratio;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      render3DView();
+    };
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Mouse drag controls
+    canvas3D.addEventListener('mousedown', e => {
+      isDragging = true;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+      tooltip.hidden = true;
+    });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    window.addEventListener('mouseleave', () => { isDragging = false; });
+    
+    canvas3D.addEventListener('mousemove', e => {
+      const rect = canvas3D.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      if (isDragging) {
+        const dx = e.clientX - lastMouseX;
+        const dy = e.clientY - lastMouseY;
+        angleY += dx * 0.0055;
+        angleX = Math.max(0.28, Math.min(0.85, angleX + dy * 0.0045));
+        lastMouseX = e.clientX;
+        lastMouseY = e.clientY;
+        hoveredIndex = -1;
+        tooltip.hidden = true;
+        render3DView();
+        return;
+      }
+
+      // Hit testing in 3D isometric view (front to back)
+      let foundIndex = -1;
+      let hitBlock: RenderedBlock | null = null;
+      for (let i = currentRenderedBlocks.length - 1; i >= 0; i--) {
+        const b = currentRenderedBlocks[i]!;
+        const dx = mouseX - b.screenX;
+        const dy = mouseY - (b.screenY - b.scaledH);
+
+        // Check top diamond
+        const inTop = (Math.abs(dx) / (b.scaledHw + 1)) + (Math.abs(dy) / (b.scaledHh + 1)) <= 1.0;
+        // Check vertical column body
+        const inBody = Math.abs(dx) <= b.scaledHw && mouseY >= b.screenY - b.scaledH && mouseY <= b.screenY + b.scaledHh;
+
+        if (inTop || inBody) {
+          foundIndex = b.index;
+          hitBlock = b;
+          break;
+        }
+      }
+
+      if (foundIndex !== hoveredIndex) {
+        hoveredIndex = foundIndex;
+        render3DView();
+      }
+
+      if (hitBlock) {
+        canvas3D.style.cursor = 'pointer';
+        const d = new Date(hitBlock.date);
+        const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        tooltip.textContent = `${hitBlock.count === 0 ? 'No' : hitBlock.count.toLocaleString()} contribution${hitBlock.count === 1 ? '' : 's'} on ${dateStr}`;
+        tooltip.hidden = false;
+        const rootRect = root.getBoundingClientRect();
+        tooltip.style.left = `${rect.left - rootRect.left + hitBlock.screenX}px`;
+        tooltip.style.top = `${rect.top - rootRect.top + hitBlock.screenY - hitBlock.scaledH - hitBlock.scaledHh - 34}px`;
+      } else {
+        canvas3D.style.cursor = 'grab';
+        tooltip.hidden = true;
+      }
+    });
+
+    canvas3D.addEventListener('mouseleave', () => {
+      hoveredIndex = -1;
+      tooltip.hidden = true;
+      render3DView();
+    });
+
+    // Touch support for mobile devices
+    canvas3D.addEventListener('touchstart', e => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        lastMouseX = e.touches[0]!.clientX;
+        lastMouseY = e.touches[0]!.clientY;
+        tooltip.hidden = true;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => { isDragging = false; });
+    window.addEventListener('touchcancel', () => { isDragging = false; });
+
+    canvas3D.addEventListener('touchmove', e => {
+      if (!isDragging || e.touches.length !== 1) return;
+      const dx = e.touches[0]!.clientX - lastMouseX;
+      const dy = e.touches[0]!.clientY - lastMouseY;
+      angleY += dx * 0.006;
+      angleX = Math.max(0.28, Math.min(0.85, angleX + dy * 0.005));
+      lastMouseX = e.touches[0]!.clientX;
+      lastMouseY = e.touches[0]!.clientY;
+      render3DView();
+    }, { passive: true });
+
+    // Reset button
+    resetBtn?.addEventListener('click', () => {
+      angleX = DEFAULT_ANGLE_X;
+      angleY = DEFAULT_ANGLE_Y;
+      hoveredIndex = -1;
+      tooltip.hidden = true;
+      render3DView();
+    });
+  }
+
+  function render3DView() {
+    if (!canvas3D) return;
+    const ctx = canvas3D.getContext('2d');
+    if (!ctx) return;
+    const w = canvas3D.width / (window.devicePixelRatio || 1);
+    const h = canvas3D.height / (window.devicePixelRatio || 1);
+
+    ctx.clearRect(0, 0, w, h);
+
+    const cols = 53;
+    const rows = 7;
+    const baseCellW = 10;
+    const baseGap = 2.2;
+    const spacing = baseCellW + baseGap;
+
+    const cosY = Math.cos(angleY);
+    const sinY = Math.sin(angleY);
+    const cosX = Math.cos(angleX);
+    const sinX = Math.sin(angleX);
+
+    // Compute raw 3D positions and bounding box
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+
+    interface RawBlock {
+      index: number;
+      rawX: number;
+      rawY: number;
+      height: number;
+      count: number;
+      level: number;
+      date: string;
+      depth: number;
+    }
+
+    const rawBlocks: RawBlock[] = [];
+
+    allDays.forEach((day, idx) => {
+      const col = Math.floor(idx / 7);
+      const row = idx % 7;
+      const posX = (col - (cols - 1) / 2) * spacing;
+      const posY = (row - (rows - 1) / 2) * spacing;
+
+      const rotX = posX * cosY - posY * sinY;
+      const rotY = (posX * sinY + posY * cosY) * sinX;
+      const depth = posX * sinY + posY * cosY;
+
+      // Height proportional curve
+      const height = day.count === 0 ? 3 : Math.min(46, 5 + day.count * 1.35);
+
+      rawBlocks.push({
+        index: idx,
+        rawX: rotX,
+        rawY: rotY,
+        height,
+        count: day.count,
+        level: day.level,
+        date: day.date,
+        depth,
+      });
+
+      const hw = baseCellW / 2;
+      const hh = (baseCellW / 2) * cosX;
+
+      minX = Math.min(minX, rotX - hw);
+      maxX = Math.max(maxX, rotX + hw);
+      minY = Math.min(minY, rotY - hh - height);
+      maxY = Math.max(maxY, rotY + hh);
+    });
+
+    // Month label positions along the front perimeter
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthMarkers: { text: string; rawX: number; rawY: number }[] = [];
+    monthNames.forEach((m, idx) => {
+      const col = Math.floor(idx * (53 / 12));
+      const mPosX = (col - (cols - 1) / 2) * spacing;
+      const mPosY = ((rows - 1) / 2 + 1.25) * spacing;
+      const mRotX = mPosX * cosY - mPosY * sinY;
+      const mRotY = (mPosX * sinY + mPosY * cosY) * sinX;
+      monthMarkers.push({ text: m, rawX: mRotX, rawY: mRotY + 12 });
+      minX = Math.min(minX, mRotX - 16);
+      maxX = Math.max(maxX, mRotX + 16);
+      maxY = Math.max(maxY, mRotY + 22);
+    });
+
+    // Auto-fit calculation (Guarantees zero clipping on all sides)
+    const padX = 26;
+    const padY = 26;
+    const availW = Math.max(100, w - padX * 2);
+    const availH = Math.max(100, h - padY * 2);
+
+    const spanW = maxX - minX;
+    const spanH = maxY - minY;
+
+    const scale = Math.min(availW / spanW, availH / spanH, 1.4);
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+
+    const originX = w / 2 - centerX * scale;
+    const originY = h / 2 - centerY * scale;
+
+    const cellW = baseCellW * scale;
+    const hw = cellW / 2;
+    const hh = hw * cosX;
+
+    // Color palettes for levels (top, left, right faces, border)
+    const palettes = [
+      { top: '#1c2430', left: '#141a23', right: '#0f141c', stroke: '#273444' }, // Level 0
+      { top: '#0e4429', left: '#0a331f', right: '#062215', stroke: '#155d38' }, // Level 1
+      { top: '#006d32', left: '#005326', right: '#003a1a', stroke: '#008a40' }, // Level 2
+      { top: '#26a641', left: '#1e8534', right: '#156527', stroke: '#3cd45b' }, // Level 3
+      { top: '#39d353', left: '#2eb344', right: '#228d34', stroke: '#7bf490' }, // Level 4
+    ];
+
+    // Painter's algorithm sort
+    rawBlocks.sort((a, b) => a.depth - b.depth);
+
+    currentRenderedBlocks = [];
+
+    // Render Blocks
+    rawBlocks.forEach(b => {
+      const screenX = originX + b.rawX * scale;
+      const screenY = originY + b.rawY * scale;
+      const scaledH = b.height * scale;
+      const isHovered = b.index === hoveredIndex;
+
+      currentRenderedBlocks.push({
+        index: b.index,
+        screenX,
+        screenY,
+        scaledH,
+        scaledHw: hw,
+        scaledHh: hh,
+        count: b.count,
+        level: b.level,
+        date: b.date,
+        depth: b.depth,
+      });
+
+      const pal = palettes[b.level] || palettes[0]!;
+
+      // Left face
+      ctx.fillStyle = isHovered ? '#1a6440' : pal.left;
+      ctx.beginPath();
+      ctx.moveTo(screenX - hw, screenY);
+      ctx.lineTo(screenX, screenY + hh);
+      ctx.lineTo(screenX, screenY + hh - scaledH);
+      ctx.lineTo(screenX - hw, screenY - scaledH);
+      ctx.closePath();
+      ctx.fill();
+
+      // Right face
+      ctx.fillStyle = isHovered ? '#268a58' : pal.right;
+      ctx.beginPath();
+      ctx.moveTo(screenX, screenY + hh);
+      ctx.lineTo(screenX + hw, screenY);
+      ctx.lineTo(screenX + hw, screenY - scaledH);
+      ctx.lineTo(screenX, screenY + hh - scaledH);
+      ctx.closePath();
+      ctx.fill();
+
+      // Top face
+      ctx.fillStyle = isHovered ? '#86efac' : pal.top;
+      ctx.beginPath();
+      ctx.moveTo(screenX, screenY - hh - scaledH);
+      ctx.lineTo(screenX + hw, screenY - scaledH);
+      ctx.lineTo(screenX, screenY + hh - scaledH);
+      ctx.lineTo(screenX - hw, screenY - scaledH);
+      ctx.closePath();
+      ctx.fill();
+
+      // Highlight stroke / Level 4 glow
+      if (isHovered) {
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      } else if (b.level === 4) {
+        ctx.strokeStyle = '#7bf49055';
+        ctx.lineWidth = 0.75;
+        ctx.stroke();
+      }
+    });
+
+    // Draw month markers along the front axis
+    ctx.fillStyle = '#7086a4';
+    ctx.font = `bold ${Math.max(9, Math.min(12, 10 * scale))}px var(--font-mono), monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    monthMarkers.forEach(m => {
+      const lblX = originX + m.rawX * scale;
+      const lblY = originY + m.rawY * scale;
+      ctx.fillText(m.text, lblX, lblY);
+    });
+    ctx.textAlign = 'start';
+    ctx.textBaseline = 'alphabetic';
+  }
+</script>
+
+<style is:global>
+  .github-graph-card {
+    position: relative;
+    border: 1px solid #24364e;
+    background: #080f1a;
+    border-radius: 6px;
+    padding: 24px;
+    margin-top: 32px;
+    box-shadow: inset 0 1px #1f2f45, 0 4px 16px #00000040;
+    font-family: var(--font-body);
+  }
+
+  .github-graph-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .github-title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .github-icon {
+    color: #8dbfff;
+    display: grid;
+    place-items: center;
+  }
+
+  .github-heading {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(15px, 2.2vw, 19px);
+    font-weight: 500;
+    color: #edf3ff;
+    letter-spacing: -0.02em;
+  }
+
+  .view-toggles {
+    display: flex;
+    background: #111a28;
+    border: 1px solid #24364e;
+    border-radius: 4px;
+    padding: 2px;
+    gap: 2px;
+  }
+
+  .toggle-btn {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 0;
+    background: transparent;
+    color: #7b93b5;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 160ms;
+  }
+
+  .toggle-btn:hover {
+    color: #edf3ff;
+    background: #19273c;
+  }
+
+  .toggle-btn.active {
+    background: #24364e;
+    color: #8dbfff;
+    box-shadow: inset 0 1px #3f587d;
+  }
+
+  .graph-container {
+    position: relative;
+    min-height: 180px;
+    margin-bottom: 24px;
+  }
+
+  .graph-viewport {
+    display: none;
+    width: 100%;
+  }
+
+  .graph-viewport.active {
+    display: block;
+  }
+
+  .grid-scroll {
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+
+  .months-row {
+    display: grid;
+    grid-template-columns: repeat(53, 13px);
+    gap: 3px;
+    padding-left: 28px;
+    font: 10px var(--font-mono);
+    color: #7086a4;
+    height: 16px;
+    margin-bottom: 4px;
+  }
+
+  .grid-with-days {
+    display: flex;
+    gap: 6px;
+  }
+
+  .days-col {
+    display: grid;
+    grid-template-rows: repeat(7, 13px);
+    gap: 3px;
+    font: 9px var(--font-mono);
+    color: #7086a4;
+    padding-top: 2px;
+    width: 22px;
+  }
+
+  .days-col span:nth-child(1) { grid-row: 2; }
+  .days-col span:nth-child(2) { grid-row: 4; }
+  .days-col span:nth-child(3) { grid-row: 6; }
+
+  .grid-cells {
+    display: flex;
+    gap: 3px;
+  }
+
+  .grid-col {
+    display: grid;
+    grid-template-rows: repeat(7, 13px);
+    gap: 3px;
+  }
+
+  .day-cell {
+    width: 13px;
+    height: 13px;
+    border-radius: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    transition: transform 120ms, border-color 120ms;
+    cursor: pointer;
+    background: #121924;
+  }
+
+  .day-cell.empty {
+    background: transparent !important;
+    border-color: transparent !important;
+    cursor: default;
+  }
+
+  .day-cell.level-0 { background: #121924; }
+  .day-cell.level-1 { background: #0e4429; }
+  .day-cell.level-2 { background: #006d32; }
+  .day-cell.level-3 { background: #26a641; }
+  .day-cell.level-4 { background: #39d353; box-shadow: 0 0 6px #39d35355; }
+
+  .day-cell:not(.empty):hover {
+    transform: scale(1.3);
+    z-index: 5;
+    border-color: #8dbfff;
+  }
+
+  #graph-3d {
+    position: relative;
+    height: 380px;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+  }
+
+  #graph-3d:active {
+    cursor: grabbing;
+  }
+
+  #gh-canvas-3d {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .canvas-controls {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .reset-btn {
+    pointer-events: auto;
+    font: 10px var(--font-mono);
+    color: #8dbfff;
+    background: #111a28cc;
+    border: 1px solid #24364e;
+    padding: 3px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: all 140ms;
+  }
+
+  .reset-btn:hover {
+    background: #1d2d44;
+    color: #edf3ff;
+    border-color: #3d587d;
+  }
+
+  .canvas-hint {
+    font: 10px var(--font-mono);
+    color: #617796;
+    background: #080f1acc;
+    padding: 3px 8px;
+    border-radius: 3px;
+    backdrop-filter: blur(4px);
+  }
+
+  .graph-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    padding: 16px 0;
+    border-top: 1px solid #1a283c;
+    border-bottom: 1px solid #1a283c;
+  }
+
+  .stat-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-label {
+    font: 11px var(--font-mono);
+    color: #7b93b5;
+  }
+
+  .stat-value-group {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
+    color: #39d353;
+  }
+
+  .stat-unit {
+    font-size: 12px;
+    color: #9cb2cf;
+  }
+
+  .stat-period {
+    font: 10px var(--font-mono);
+    color: #617796;
+  }
+
+  .graph-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+    font: 11px var(--font-mono);
+    color: #7b93b5;
+  }
+
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .level-box {
+    width: 11px;
+    height: 11px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  .level-box.level-0 { background: #121924; }
+  .level-box.level-1 { background: #0e4429; }
+  .level-box.level-2 { background: #006d32; }
+  .level-box.level-3 { background: #26a641; }
+  .level-box.level-4 { background: #39d353; }
+
+  .gh-tooltip {
+    position: absolute;
+    z-index: 30;
+    transform: translateX(-50%);
+    background: #142032;
+    border: 1px solid #3d5578;
+    color: #edf3ff;
+    padding: 6px 10px;
+    font: 11px var(--font-mono);
+    border-radius: 4px;
+    pointer-events: none;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px #00000088;
+  }
+
+  @media (max-width: 600px) {
+    .github-graph-card { padding: 16px; }
+    .graph-stats { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .stat-value { font-size: 20px; }
+    #graph-3d { height: 320px; }
+  }
+</style>
