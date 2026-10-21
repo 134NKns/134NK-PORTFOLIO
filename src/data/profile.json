@@ -22,9 +22,9 @@
     "description": "Developed tools that visualize price structure, market state across timeframes, and Volume Profile using self-defined rules."
   },
   "rentalProject": {
-    "title": "SabaiJai — Rental & Retail System",
+    "title": "Flowly (formerly SabaiJai) — Rental & Retail Platform",
     "stack": "Next.js · TypeScript · Hono · Supabase · LINE Messaging API",
-    "description": "Built an equipment rental and retail storefront with product browsing and rental details, plus LINE messages for payment status and return reminders. Screenshots use demo-store data."
+    "description": "Built an equipment rental and retail storefront with product browsing, rental booking, and modern UI workflows, plus LINE messages for payment status and return reminders."
   },
   "skills": [
     {
