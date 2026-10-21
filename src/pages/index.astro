@@ -14,9 +14,11 @@ import lineReturn from '../assets/line-return-reminder.png';
 import quinrMenu from '../assets/projects/quinr-menu.webp';
 import quinrMobile from '../assets/projects/quinr-mobile.webp';
 import quinrOptions from '../assets/projects/quinr-menu-options.webp';
-import rentalStorefront from '../assets/projects/flowly-storefront.webp';
-import rentalProduct from '../assets/projects/sabaijai-product.webp';
-import rentalMobile from '../assets/projects/flowly-mobile.webp';
+import flowlyLanding from '../assets/projects/flowly/landing.webp';
+import flowlyWorkspaces from '../assets/projects/flowly/workspaces.webp';
+import flowlyDashboard from '../assets/projects/flowly/dashboard.webp';
+import flowlyStorefront from '../assets/projects/flowly/storefront.webp';
+import flowlyRentalBooking from '../assets/projects/flowly/rental-booking.webp';
 import resumeImage from '../assets/nachthaphong-resume.webp';
 const stackIcons = import.meta.glob<string>('../assets/stack/*.svg', { eager: true, query: '?url', import: 'default' });
 const restaurantScreenshots = [
@@ -25,9 +27,11 @@ const restaurantScreenshots = [
   { image: quinrMobile, filename: 'Mobile-menu.webp', title: 'QuinR-rai — Mobile menu' },
 ];
 const rentalScreenshots = [
-  { image: rentalStorefront, filename: 'Flowly-Storefront.webp', title: 'Flowly — Rental and retail storefront' },
-  { image: rentalProduct, filename: 'Product-detail.webp', title: 'Flowly — Rental product details' },
-  { image: rentalMobile, filename: 'Flowly-Mobile.webp', title: 'Flowly — Mobile storefront' },
+  { image: flowlyLanding, filename: 'Landing.webp', title: 'Flowly — Landing page' },
+  { image: flowlyWorkspaces, filename: 'Workspaces.webp', title: 'Flowly — Store workspace selector' },
+  { image: flowlyDashboard, filename: 'Dashboard.webp', title: 'Flowly — Operations dashboard' },
+  { image: flowlyStorefront, filename: 'Storefront.webp', title: 'Flowly — Retail storefront & catalog' },
+  { image: flowlyRentalBooking, filename: 'Rental-booking.webp', title: 'Flowly — Rental calendar & deposit booking' },
   { image: linePayment, filename: 'Payment-status.png', title: 'LINE — Payment status' },
   { image: lineReturn, filename: 'Return-reminder.png', title: 'LINE — Rental return reminder' },
 ];
