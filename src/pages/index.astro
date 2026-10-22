@@ -20,6 +20,12 @@ import flowlyDashboard from '../assets/projects/flowly/dashboard.webp';
 import flowlyStorefront from '../assets/projects/flowly/storefront.webp';
 import flowlyRentalBooking from '../assets/projects/flowly/rental-booking.webp';
 import resumeImage from '../assets/nachthaphong-resume.webp';
+import RetroWindow from '../components/react/RetroWindow';
+import RetroToast from '../components/react/RetroToast';
+import MotionProjectCard from '../components/react/MotionProjectCard';
+import MotionStackChip from '../components/react/MotionStackChip';
+import MotionHeroActions from '../components/react/MotionHeroActions';
+import MotionCopyEmail from '../components/react/MotionCopyEmail';
 const stackIcons = import.meta.glob<string>('../assets/stack/*.svg', { eager: true, query: '?url', import: 'default' });
 const restaurantScreenshots = [
   { image: quinrMenu, filename: 'Menu.webp', title: 'QuinR-rai — Store menu' },
@@ -48,6 +54,7 @@ const rentalScreenshots = [
   </head>
   <body>
     <a class="skip-link" href="#about">Skip to profile</a>
+    <RetroToast client:load />
     <div id="retro-toast" class="retro-toast" role="status" aria-live="polite" hidden></div>
     <main>
     <div class="hero" id="home">
@@ -59,25 +66,11 @@ const rentalScreenshots = [
       </section>
       <footer>
         <span>BASED IN THAILAND</span>
-        <div class="hero-actions">
-          <a class="hero-resume-btn" href={resumeImage.src} data-title="Nachthaphong-Resume.webp" aria-haspopup="dialog" aria-controls="attachment-dialog" aria-label="View Nachthaphong Saengbut Resume">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5L14 4.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h-2z"/></svg>
-            VIEW RESUME / CV <span aria-hidden="true">↗</span>
-          </a>
-          <a class="scroll-cue" href="#about">EXPLORE PROFILE <span aria-hidden="true">↓</span></a>
-        </div>
+        <MotionHeroActions client:load resumeSrc={resumeImage.src} />
       </footer>
     </div>
     <div class="profile-content">
-      <section class="profile-window" id="about" aria-labelledby="about-heading">
-        <div class="window-title">
-          <span>01 / ABOUT.TXT</span>
-          <div class="window-controls">
-            <button type="button" class="win-btn win-min" aria-label="Minimize About window">_</button>
-            <button type="button" class="win-btn win-max" aria-label="Maximize About window">□</button>
-            <button type="button" class="win-btn win-close" aria-label="Close About window">×</button>
-          </div>
-        </div>
+      <RetroWindow client:load id="about" title="01 / ABOUT.TXT" ariaLabelledBy="about-heading">
         <div class="window-body">
           <p class="eyebrow">THE PERSON BEHIND THE SCREEN</p>
           <h2 id="about-heading">A little about me.</h2>
@@ -94,16 +87,8 @@ const rentalScreenshots = [
             </a>
           </div>
         </div>
-      </section>
-      <section class="profile-window" id="experience" aria-labelledby="work-heading">
-        <div class="window-title">
-          <span>02 / WORK.LOG</span>
-          <div class="window-controls">
-            <button type="button" class="win-btn win-min" aria-label="Minimize Work window">_</button>
-            <button type="button" class="win-btn win-max" aria-label="Maximize Work window">□</button>
-            <button type="button" class="win-btn win-close" aria-label="Close Work window">×</button>
-          </div>
-        </div>
+      </RetroWindow>
+      <RetroWindow client:visible id="experience" title="02 / WORK.LOG" ariaLabelledBy="work-heading">
         <div class="window-body">
           <p class="eyebrow">PROFESSIONAL EXPERIENCE</p>
           <h2 id="work-heading">{profile.experience.company}</h2>
@@ -116,16 +101,8 @@ const rentalScreenshots = [
             iiG-employment.jpeg <span aria-hidden="true">↗</span>
           </a>
         </div>
-      </section>
-      <section class="profile-window" id="skills" aria-labelledby="skills-heading">
-        <div class="window-title">
-          <span>03 / SKILLS.SYS</span>
-          <div class="window-controls">
-            <button type="button" class="win-btn win-min" aria-label="Minimize Skills window">_</button>
-            <button type="button" class="win-btn win-max" aria-label="Maximize Skills window">□</button>
-            <button type="button" class="win-btn win-close" aria-label="Close Skills window">×</button>
-          </div>
-        </div>
+      </RetroWindow>
+      <RetroWindow client:visible id="skills" title="03 / SKILLS.SYS" ariaLabelledBy="skills-heading">
         <div class="window-body">
           <p class="eyebrow">TOOLS I WORK WITH</p>
           <h2 id="skills-heading">My toolkit.</h2>
@@ -134,10 +111,12 @@ const rentalScreenshots = [
               <dt>{skill.area}</dt>
               <dd>
                 {skill.tools.length > 0 && <ul class="stack-list" aria-label={`${skill.area} technologies`}>
-                  {skill.tools.map(tool => <li class="stack-chip">
-                    <span class="stack-icon"><img src={stackIcons[`../assets/stack/${tool.icon}.svg`]} width="20" height="20" alt="" aria-hidden="true" loading="lazy" decoding="async" /></span>
-                    <span>{tool.name}</span>
-                  </li>)}
+                  {skill.tools.map(tool => (
+                    <MotionStackChip client:visible>
+                      <span class="stack-icon"><img src={stackIcons[`../assets/stack/${tool.icon}.svg`]} width="20" height="20" alt="" aria-hidden="true" loading="lazy" decoding="async" /></span>
+                      <span>{tool.name}</span>
+                    </MotionStackChip>
+                  ))}
                 </ul>}
                 <p class="skill-note">{skill.detail}</p>
               </dd>
@@ -149,7 +128,7 @@ const rentalScreenshots = [
 
           <div class="projects-heading"><h3>Selected projects.</h3><span>PRIVATE SOURCE / DEMO CAPTURES</span></div>
 
-          <article class="project-sample" aria-labelledby="restaurant-heading">
+          <MotionProjectCard client:visible ariaLabelledBy="restaurant-heading">
             <p class="project-kicker">01 / RESTAURANT ORDERING</p>
             <h3 id="restaurant-heading">{profile.restaurantProject.title}</h3>
             <p class="period">{profile.restaurantProject.stack}</p>
@@ -162,8 +141,9 @@ const rentalScreenshots = [
                 </a>
               ))}
             </div>
-          </article>
-          <article class="project-sample" aria-labelledby="rental-heading">
+          </MotionProjectCard>
+
+          <MotionProjectCard client:visible ariaLabelledBy="rental-heading">
             <p class="project-kicker">02 / RENTAL &amp; RETAIL</p>
             <h3 id="rental-heading">{profile.rentalProject.title}</h3>
             <p class="period">{profile.rentalProject.stack}</p>
@@ -176,8 +156,9 @@ const rentalScreenshots = [
                 </a>
               ))}
             </div>
-          </article>
-          <article class="project-sample" aria-labelledby="trading-heading">
+          </MotionProjectCard>
+
+          <MotionProjectCard client:visible ariaLabelledBy="trading-heading">
             <p class="project-kicker">03 / TRADING TOOLS</p>
             <h3 id="trading-heading">{profile.tradingProject.title}</h3>
             <p class="period">{profile.tradingProject.stack}</p>
@@ -186,33 +167,19 @@ const rentalScreenshots = [
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m8 12 7-7a3 3 0 0 1 4 4L9 19a5 5 0 0 1-7-7L12 2" /></svg>
               MT5-tools.png <span aria-hidden="true">↗</span>
             </a>
-          </article>
+          </MotionProjectCard>
         </div>
-      </section>
-      <section class="profile-window" id="contact" aria-labelledby="contact-heading">
-        <div class="window-title">
-          <span>04 / MAIL.TXT</span>
-          <div class="window-controls">
-            <button type="button" class="win-btn win-min" aria-label="Minimize Contact window">_</button>
-            <button type="button" class="win-btn win-max" aria-label="Maximize Contact window">□</button>
-            <button type="button" class="win-btn win-close" aria-label="Close Contact window">×</button>
-          </div>
-        </div>
+      </RetroWindow>
+      <RetroWindow client:visible id="contact" title="04 / MAIL.TXT" ariaLabelledBy="contact-heading">
         <div class="window-body">
           <p class="eyebrow">CONTACT</p>
           <h2 id="contact-heading">Say hello.</h2>
           <div class="contact-links">
-            <div class="contact-email-row">
-              <a class="contact-link" href={`mailto:${profile.email}`}>{profile.email}<span aria-hidden="true"> ↗</span></a>
-              <button type="button" class="copy-email-btn" id="copy-email-btn" aria-label="Copy email address" title="Copy to clipboard">
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/></svg>
-                <span>COPY</span>
-              </button>
-            </div>
+            <MotionCopyEmail client:visible email={profile.email} />
             <a class="contact-link" href={profile.line} target="_blank" rel="noopener noreferrer">Chat on LINE<span aria-hidden="true"> ↗</span></a>
           </div>
         </div>
-      </section>
+      </RetroWindow>
     </div>
     </main>
     <RetroDock />
@@ -331,51 +298,12 @@ const rentalScreenshots = [
   const toast = document.getElementById('retro-toast')!;
   let toastTimer: ReturnType<typeof setTimeout>;
   function showToast(msg: string) {
-    clearTimeout(toastTimer);
-    toast.textContent = msg;
-    toast.hidden = false;
-    toastTimer = setTimeout(() => { toast.hidden = true; }, 2800);
+    window.dispatchEvent(
+      new CustomEvent('retro-toast', {
+        detail: { message: msg },
+      })
+    );
   }
-
-  // Copy Email Functionality
-  const copyBtn = document.getElementById('copy-email-btn');
-  if (copyBtn) {
-    copyBtn.addEventListener('click', () => {
-      const email = '134nk.dev@gmail.com';
-      navigator.clipboard.writeText(email).then(() => {
-        showToast('EMAIL COPIED TO CLIPBOARD! [OK]');
-        playBeep(800, 'triangle', 0.08, 0.05);
-      }).catch(() => {
-        showToast(`EMAIL: ${email}`);
-      });
-    });
-  }
-
-  // Window Controls (Minimize / Accordion Toggle)
-  document.querySelectorAll<HTMLElement>('.profile-window').forEach(win => {
-    const minBtn = win.querySelector('.win-min');
-    const maxBtn = win.querySelector('.win-max');
-    const closeBtn = win.querySelector('.win-close');
-    const body = win.querySelector<HTMLElement>('.window-body');
-
-    minBtn?.addEventListener('click', () => {
-      if (body) {
-        const isHidden = body.style.display === 'none';
-        body.style.display = isHidden ? '' : 'none';
-        playClick();
-      }
-    });
-
-    maxBtn?.addEventListener('click', () => {
-      win.classList.toggle('maximized');
-      playClick();
-    });
-
-    closeBtn?.addEventListener('click', () => {
-      showToast('SYSTEM WARNING: CORE RECORD CANNOT BE TERMINATED.');
-      playBeep(240, 'square', 0.12, 0.08);
-    });
-  });
 </script>
 
 <style is:global>
@@ -475,7 +403,7 @@ const rentalScreenshots = [
     box-shadow: 0 16px 48px #000000cc, 0 0 0 1px #8dbfff33;
     border-radius: 6px;
     overflow: hidden;
-    width: min(920px, 94vw);
+    width: min(1040px, 94vw);
     max-width: 94vw;
     margin: auto;
   }
@@ -489,7 +417,8 @@ const rentalScreenshots = [
   .attachment-window {
     display: flex;
     flex-direction: column;
-    height: min(90vh, 880px);
+    max-height: min(92vh, 880px);
+    height: auto;
     width: 100%;
   }
   .attachment-titlebar {
@@ -570,24 +499,27 @@ const rentalScreenshots = [
   }
   .attachment-preview {
     flex: 1;
-    overflow-y: auto;
-    overflow-x: auto;
-    padding: 24px;
+    overflow: auto;
+    padding: 16px;
     background: #060b14;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
+    min-height: 240px;
   }
   .attachment-preview img {
     display: block;
-    width: 100%;
-    max-width: 820px;
+    width: auto;
+    max-width: 100%;
+    max-height: min(78vh, 760px);
     height: auto;
-    margin: 0 auto;
+    object-fit: contain;
+    margin: auto;
+    border: 1px solid #203550;
     border-radius: 4px;
-    box-shadow: 0 10px 30px #000000aa;
+    box-shadow: 0 12px 32px #00000099;
     transition: transform 140ms ease-out;
-    transform-origin: top center;
+    transform-origin: center center;
   }
   .attachment-preview p {
     max-width: 280px;
